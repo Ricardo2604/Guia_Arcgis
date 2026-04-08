@@ -625,7 +625,10 @@
         <i class="fas fa-map-marked-alt text-4xl mb-2 text-blue-400"></i>
         <h2 class="text-xl font-bold uppercase tracking-wider leading-tight" data-i18n="sidebar-title">Manual ArcGIS Pro</h2>
         <p class="text-xs text-gray-400" data-i18n="sidebar-subtitle">Guía de Referencia Interna</p>
-        <button id="lang-btn" onclick="toggleLanguage()" style="margin-top:10px;font-size:0.75rem;background:#007ac2;color:white;border:none;padding:5px 14px;border-radius:999px;cursor:pointer;font-weight:700;letter-spacing:0.05em;transition:background 0.2s;" onmouseover="this.style.background='#005e95'" onmouseout="this.style.background='#007ac2'">🌐 EN</button>
+        <div style="margin-top:10px;display:flex;gap:6px;">
+            <button id="lang-btn-es" onclick="setLanguage('es')" style="font-size:0.75rem;background:#007ac2;color:white;border:none;padding:5px 14px;border-radius:999px;cursor:pointer;font-weight:700;letter-spacing:0.05em;transition:background 0.2s;opacity:1;" onmouseover="this.style.background='#005e95'" onmouseout="this.style.background=currentLang==='es'?'#005e95':'#007ac2'">🌐 Español</button>
+            <button id="lang-btn-en" onclick="setLanguage('en')" style="font-size:0.75rem;background:#007ac2;color:white;border:none;padding:5px 14px;border-radius:999px;cursor:pointer;font-weight:700;letter-spacing:0.05em;transition:background 0.2s;opacity:0.5;" onmouseover="this.style.background='#005e95'" onmouseout="this.style.background=currentLang==='en'?'#005e95':'#007ac2'">🌐 English</button>
+        </div>
     </div>
     <nav class="mt-4">
         <div class="nav-item active-nav" onclick="showSection('inicio', this)"><i class="fas fa-desktop w-6 mr-3"></i> <span data-i18n="nav-inicio">Interfaz y Paneles</span></div>
@@ -1825,9 +1828,11 @@
         // Update page title and html lang
         document.title = lang === 'es' ? 'Manual de Referencia ArcGIS Pro - Empresa' : 'ArcGIS Pro Reference Manual - Company';
         document.documentElement.lang = lang;
-        // Update lang button text
-        var btn = document.getElementById('lang-btn');
-        if (btn) btn.textContent = lang === 'es' ? '🌐 EN' : '🌐 ES';
+        // Update lang buttons active state
+        var btnEs = document.getElementById('lang-btn-es');
+        var btnEn = document.getElementById('lang-btn-en');
+        if (btnEs) { btnEs.style.opacity = lang === 'es' ? '1' : '0.45'; btnEs.style.background = lang === 'es' ? '#005e95' : '#007ac2'; }
+        if (btnEn) { btnEn.style.opacity = lang === 'en' ? '1' : '0.45'; btnEn.style.background = lang === 'en' ? '#005e95' : '#007ac2'; }
         // Update search input placeholder
         var searchInput = document.getElementById('tool-search');
         if (searchInput) searchInput.placeholder = t['datos-search-placeholder'];

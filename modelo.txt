@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Referencia ArcGIS Pro - Empresa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --arcgis-blue: #005e95;
+            --arcgis-dark: #1a1a1a;
+            --arcgis-light: #f4f4f4;
+            --arcgis-accent: #007ac2;
+            --hotspot-blue: #007ac2;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--arcgis-light);
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .sidebar {
+            background-color: var(--arcgis-dark);
+            height: 100vh;
+            position: fixed;
+            width: 260px;
+            color: white;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        .content {
+            margin-left: 260px;
+            padding: 40px;
+        }
+        .nav-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+        }
+        .nav-item:hover, .active-nav {
+            background-color: #333;
+            border-left: 4px solid var(--arcgis-blue);
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .img-container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+            text-align: center;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background-color: var(--arcgis-blue);
+            color: white;
+            border-radius: 50%;
+            font-size: 14px;
+            margin-right: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .alert-box {
+            background-color: #fff4e5;
+            border-left: 4px solid #ffa117;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .alert-save {
+            border-left: 5px solid #e74c3c;
+            background-color: #fdf2f2;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .img-caption {
+            background: #eee;
+            padding: 8px;
+            font-size: 0.75rem;
+            color: #666;
+            font-style: italic;
+        }
+        .tool-badge {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        /* Estilos Guía Interactiva */
+        .viewport-container {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            border-radius: 8px;
+        }
+        .wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .main-img {
+            max-height: 70vh;
+            max-width: 100%;
+            display: block;
+        }
+        .hotspot {
+            position: absolute;
+            background: rgba(0, 122, 194, 0);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 20;
+        }
+        .hotspot:hover {
+            background: rgba(0, 122, 194, 0.15);
+            border-color: var(--hotspot-blue);
+            box-shadow: 0 0 20px rgba(0, 122, 194, 0.4);
+        }
+        #info-panel {
+            background: #2b2b2b;
+            border-top: 4px solid var(--hotspot-blue);
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+            color: #efefef;
+        }
+        kbd {
+            background: #444;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            border: 1px solid #666;
+            color: white;
+        }
+  /* Simulador ArcGIS Pro Style */
+        .arc-window {
+            background: #fff;
+            border: 1px solid var(--arcgis-border);
+            display: flex;
+            height: 620px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .arc-panel-left {
+            width: 220px;
+            background: var(--arcgis-header);
+            border-right: 1px solid var(--arcgis-border);
+            display: flex;
+            flex-direction: column;
+        }
+        .arc-panel-right {
+            width: 340px;
+            border-left: 1px solid var(--arcgis-border);
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .arc-main-view {
+            flex-grow: 1;
+            position: relative;
+            background-color: #e5e5e5;
+            background-image: linear-gradient(#dcdcdc 1px, transparent 1px), linear-gradient(90deg, #dcdcdc 1px, transparent 1px);
+            background-size: 25px 25px;
+            overflow: hidden;
+        }
+
+        .arc-header {
+            padding: 8px 12px;
+            background: var(--arcgis-header);
+            border-bottom: 1px solid var(--arcgis-border);
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Tool UI Elements */
+        .search-bar {
+            border: 1px solid var(--arcgis-border);
+            padding: 4px 8px;
+            width: 100%;
+            font-size: 0.8rem;
+            outline: none;
+        }
+        .tool-parameter {
+            margin-bottom: 12px;
+        }
+        .tool-label {
+            display: block;
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+            color: #444;
+        }
+        .tool-input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--arcgis-border);
+            padding: 1px;
+            background: #fff;
+        }
+        .tool-input {
+            flex-grow: 1;
+            border: none;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            outline: none;
+            background: transparent;
+        }
+        .folder-icon {
+            padding: 2px 6px;
+            background: #f8f8f8;
+            cursor: pointer;
+            border-left: 1px solid var(--arcgis-border);
+            color: #d4a017;
+        }
+        .run-btn {
+            background: #fff;
+            border: 1px solid var(--arcgis-border);
+            padding: 5px 15px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .run-btn:hover { background: #f2f2f2; }
+        .run-btn i { color: var(--arcgis-blue); }
+
+        .pulsing {
+            animation: pulse-blue 1.5s infinite;
+        }
+        @keyframes pulse-blue {
+            0% { box-shadow: 0 0 0 0 rgba(0, 94, 149, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 94, 149, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 94, 149, 0); }
+        }
+
+        .step-instruction {
+            background: var(--arcgis-blue);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 80px;
+        }
+        .warning-step {
+            background: #f59e0b;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="p-6 text-center border-b border-gray-700">
+        <i class="fas fa-map-marked-alt text-4xl mb-2 text-blue-400"></i>
+        <h2 class="text-xl font-bold uppercase tracking-wider leading-tight">Manual ArcGIS Pro</h2>
+        <p class="text-xs text-gray-400">Guía de Referencia Interna</p>
+    </div>
+    <nav class="mt-4">
+        <div class="nav-item active-nav" onclick="showSection('inicio')"><i class="fas fa-desktop w-6 mr-3"></i> Interfaz y Paneles</div>
+        <div class="nav-item" onclick="showSection('crear-capas')"><i class="fas fa-layer-group w-6 mr-3"></i> Creación de Capas</div>
+        <div class="nav-item" onclick="showSection('edicion')"><i class="fas fa-edit w-6 mr-3"></i> Dibujo y Edición</div>
+        <div class="nav-item" onclick="showSection('datos')"><i class="fas fa-database w-6 mr-3"></i> Crear Shapefiles</div>
+        <div class="nav-item" onclick="showSection('dominios')"><i class="fas fa-list-ul w-6 mr-3"></i> Dominios y Atributos</div>
+        <div class="nav-item" onclick="showSection('exportar')"><i class="fas fa-file-export w-6 mr-3"></i> KMZ y Exportación</div>
+        <div class="nav-item" onclick="showSection('paquetes')"><i class="fas fa-box-open w-6 mr-3"></i> Empaquetado (.mpkx)</div>
+    </nav>
+</div>
+
+<div class="content">
+    
+    <section id="inicio" class="section-content">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Interfaz y Paneles Principales</h1>
+        
+        <div class="card p-0 overflow-hidden bg-[#202020] border border-gray-800">
+            <div class="bg-[#202020] p-4 border-b border-gray-700 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-white flex items-center">
+                    <i class="fas fa-mouse-pointer mr-3 text-blue-500"></i> Explorador Interactivo
+                </h2>
+                <span class="text-xs text-gray-400 italic">Haz clic en las zonas de la imagen</span>
+            </div>
+
+            <div class="viewport-container">
+                <div class="wrapper">
+                    <img src="Interfaz.png" alt="Interfaz ArcGIS Pro" class="main-img" id="img-interfaz">
+                    <div class="hotspot" style="top:0; left:0; width:100%; height:18%;" onclick="showHotspot('ribbon')"></div>
+                    <div class="hotspot" style="top:18%; left:0; width:17%; height:82%;" onclick="showHotspot('contents')"></div>
+                    <div class="hotspot" style="top:18%; left:17%; width:66%; height:82%;" onclick="showHotspot('map')"></div>
+                    <div class="hotspot" style="top:18%; left:83%; width:17%; height:82%;" onclick="showHotspot('attr')"></div>
+                </div>
+            </div>
+
+            <div id="info-panel">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1 pr-10">
+                        <h2 id="hs-title" class="text-2xl font-bold text-blue-400 mb-2">Título</h2>
+                        <div id="hs-content" class="text-sm text-gray-300 leading-relaxed grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+                    </div>
+                    <button onclick="closeHotspot()" class="text-gray-500 hover:text-white text-3xl">&times;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="crear-capas" class="section-content hidden">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Creación Detallada de Capas (Feature Classes)</h1>
+        
+        <div class="alert-box">
+            <h4 class="font-bold text-orange-800"><i class="fas fa-exclamation-triangle mr-2"></i> Diferencia Importante</h4>
+            <p class="text-sm text-orange-900 leading-relaxed">
+                Las capas no se crean desde el panel de <strong>Contents</strong>. Para crear una capa nueva, debes usar el panel de <strong>Catalog</strong> (a la derecha).
+            </p>
+        </div>
+
+        <div class="card">
+            <h3 class="text-xl font-semibold mb-6 text-blue-700">Proceso Paso a Paso</h3>
+            
+            <div class="space-y-12">
+                <div class="flex items-start flex-col">
+                    <div class="flex items-center mb-3">
+                        <span class="step-number">1</span>
+                        <h4 class="font-bold text-gray-800">Acceso a la Geodatabase</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 ml-10">En el panel <strong>Catalog</strong>, expande <strong>Databases</strong>, haz clic derecho en tu .gdb y selecciona <code class="tool-badge">New</code> > <code class="tool-badge">Feature Class</code>.</p>
+                    <div class="img-container w-full ml-0 md:ml-10 md:w-2/3">
+                        <img src="capas.png" alt="Menú New Feature Class" onerror="this.src='https://via.placeholder.com/600x300?text=Menu+New+Feature+Class'">
+                        <div class="img-caption">Menú contextual para crear una nueva clase de entidad.</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start flex-col">
+                    <div class="flex items-center mb-3">
+                        <span class="step-number">2</span>
+                        <h4 class="font-bold text-gray-800">Definición de Identidad</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 ml-10">Establece el <strong>Name</strong> (sin espacios) y el <strong>Alias</strong>. Selecciona el tipo de geometría (Punto, Línea o Polígono).</p>
+                    <div class="img-container w-full ml-0 md:ml-10 md:w-2/3">
+                        <img src="paso2capas.png" alt="Definición de Nombre y Tipo" onerror="this.src='https://via.placeholder.com/600x300?text=Nombre+y+Geometria'">
+                        <div class="img-caption">Configuración inicial del asistente.</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start flex-col">
+                    <div class="flex items-center mb-3">
+                        <span class="step-number">3</span>
+                        <h4 class="font-bold text-gray-800">Configuración de Campos (Fields)</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 ml-10">Define las columnas de tu base de datos. Agrega campos como "Estado", "Material" o "Fecha".</p>
+                    <div class="img-container w-full ml-0 md:ml-10 md:w-2/3">
+                        <img src="paso3capas.png" alt="Tabla de Campos" onerror="this.src='https://via.placeholder.com/600x300?text=Configuracion+de+Campos'">
+                        <div class="img-caption">Definición de nombres de campo y tipos de datos.</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start flex-col">
+                    <div class="flex items-center mb-3">
+                        <span class="step-number">4</span>
+                        <h4 class="font-bold text-gray-800">Sistema de Coordenadas</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 ml-10">Busca y selecciona el sistema de coordenadas oficial para garantizar la precisión geográfica.</p>
+                    <div class="img-container w-full ml-0 md:ml-10 md:w-2/3">
+                        <img src="paso4capas.png" alt="Sistema de Coordenadas" onerror="this.src='https://via.placeholder.com/600x300?text=Sistema+de+Coordenadas'">
+                        <div class="img-caption">Selección del Sistema de Referencia Espacial.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="edicion" class="section-content hidden">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Guía de Dibujo y Edición</h1>
+        <div class="card">
+            <h3 class="text-xl font-semibold mb-4 text-blue-700">Digitalización de Entidades</h3>
+            <div class="space-y-6">
+                <div class="flex items-start">
+                    <span class="step-number">1</span>
+                    <div>
+                        <h4 class="font-bold text-gray-800">Abrir Panel Create</h4>
+                        <p class="text-sm text-gray-600">En la pestaña <strong>Edit</strong>, pulsa el botón <strong>Create</strong>. Aparecerán tus plantillas a la derecha.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <span class="step-number">2</span>
+                    <div>
+                        <h4 class="font-bold text-gray-800">Uso de Herramientas y F2</h4>
+                        <p class="text-sm text-gray-600">Haz clic en el mapa para trazar. Usa <kbd>F2</kbd> para terminar el dibujo actual.</p>
+                    </div>
+                </div>
+                <div class="alert-save">
+                    <h4 class="font-bold text-red-800 text-sm"><i class="fas fa-save mr-2"></i> Paso Vital: Guardar Edición</h4>
+                    <p class="text-xs text-red-700 mt-1">Recuerda: El botón "Save" general NO guarda tus dibujos. Debes ir a la pestaña <strong>Edit</strong> y pulsar <strong>Save</strong> en el grupo "Manage Edits".</p>
+                </div>
+            </div>
+        </div>
+</section>
+<section id="datos" class="section-content hidden">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Crear Shapefiles</h1>
+    <p class="text-gray-600 mb-6 italic">Aprende a usar la herramienta para convertir tu base de datos en archivos Shape (.shp).</p>
+
+    <div id="instruction-box" class="step-instruction">
+        <span id="instruction-text"><i class="fas fa-search mr-2"></i> <b>PASO 1:</b> En el panel de Geoprocessing, escribe rápido <b>"geodata"</b> para buscar la herramienta.</span>
+        <button onclick="resetTool()" class="text-[10px] bg-white text-blue-900 px-3 py-1 rounded hover:bg-blue-50 font-bold uppercase transition ml-4">Reiniciar</button>
+    </div>
+
+    <div class="arc-window">
+        <div class="arc-panel-left">
+            <div class="arc-header"><span>Contents</span><i class="fas fa-times text-[10px]"></i></div>
+            <div class="p-3 space-y-1">
+                <div class="text-[10px] text-gray-400 font-bold mb-2 uppercase">Drawing Order</div>
+                <div class="flex items-center text-[11px] font-semibold"><i class="fas fa-check-square mr-2 text-blue-600"></i> <i class="fas fa-layer-group text-orange-400 mr-1"></i> Fiber Cable</div>
+                <div class="flex items-center text-[11px] text-gray-600"><i class="fas fa-check-square mr-2 text-blue-600"></i> <i class="fas fa-layer-group text-orange-400 mr-1"></i> Slack Loop</div>
+                <div class="flex items-center text-[11px] text-gray-600"><i class="fas fa-check-square mr-2 text-blue-600"></i> <i class="fas fa-layer-group text-orange-400 mr-1"></i> Splice Case</div>
+            </div>
+        </div>
+
+        <div class="arc-main-view flex items-center justify-center">
+            <div class="relative z-10 text-center bg-white/60 backdrop-blur-sm p-5 rounded-xl border border-gray-300">
+                <i class="fas fa-globe-americas text-6xl text-gray-400 mb-2"></i>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Vista de Mapa Activa</p>
+            </div>
+        </div>
+
+        <div class="arc-panel-right">
+            <div class="arc-header">
+                <span id="panel-title">Geoprocessing</span>
+                <div class="flex gap-2 text-gray-400"><i class="fas fa-search"></i> <i class="fas fa-thumbtack"></i></div>
+            </div>
+
+            <div id="search-view" class="p-3">
+                <input type="text" id="tool-search" class="search-bar pulsing" placeholder="Busca herramientas aquí..." onkeyup="handleSearch(event)">
+                <div id="search-results" class="mt-4 hidden">
+                    <div class="p-3 hover:bg-blue-50 cursor-pointer border border-blue-100 rounded flex items-center gap-3 transition" onclick="openTool()">
+                        <i class="fas fa-tools text-blue-500"></i>
+                        <div>
+                            <div class="text-xs font-bold">Crear Shapefiles</div>
+                            <div class="text-[9px] text-gray-400 uppercase italic">Conversion Tools</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tool-view" class="hidden h-full flex flex-col">
+                <div class="p-3 border-b flex items-center justify-between bg-white">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-arrow-left text-xs cursor-pointer text-gray-500" onclick="resetTool()"></i>
+                        <span class="text-xs font-bold text-blue-800 uppercase tracking-tight">Geodatabase To Shape</span>
+                    </div>
+                    <div class="flex gap-2 text-gray-400 text-[10px]">
+                         <i class="fas fa-plus-circle"></i>
+                         <i class="fas fa-question-circle"></i>
+                    </div>
+                </div>
+
+                <div class="px-4 pt-2 flex gap-4 border-b text-[10px] font-bold bg-white">
+                    <span class="text-blue-700 border-b-2 border-blue-700 pb-1 cursor-pointer">Parameters</span>
+                    <span class="text-gray-400 pb-1 cursor-pointer hover:text-gray-600">Environments</span>
+                </div>
+
+                <div class="p-4 flex-grow overflow-y-auto space-y-4 bg-white">
+                    <div class="tool-parameter">
+                        <label class="tool-label flex items-center gap-1">
+                            Input Features <i class="fas fa-info-circle text-[10px] text-gray-300"></i>
+                        </label>
+                        <div class="tool-input-group pulsing" id="input-features-box">
+                            <select id="layer-select" class="tool-input" onchange="addLayer()">
+                                <option value="">Selecciona las capas...</option>
+                                <option value="Fiber Cable">Fiber Cable</option>
+                                <option value="Slack Loop">Slack Loop</option>
+                                <option value="Splice Case">Splice Case</option>
+                            </select>
+                            <div class="folder-icon"><i class="fas fa-folder"></i></div>
+                        </div>
+                        <div id="selected-layers" class="mt-2 space-y-1"></div>
+                    </div>
+
+                    <div class="tool-parameter">
+                        <label class="tool-label">Output Folder</label>
+                        <div class="tool-input-group" id="output-box">
+                            <input type="text" class="tool-input italic text-gray-500" value="FSA">
+                            <div class="folder-icon"><i class="fas fa-folder"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="tool-parameter">
+                        <label class="tool-label">Coded Value Domain Export Mode</label>
+                        <div class="tool-input-group"><select class="tool-input"><option>Values</option><option>Descriptions</option></select></div>
+                    </div>
+
+                    <div class="tool-parameter">
+                        <label class="tool-label">Conversion Method</label>
+                        <div class="tool-input-group"><select class="tool-input"><option>Defense by subtype</option><option>Standard</option></select></div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-gray-50 border-t flex justify-end">
+                    <button id="run-btn" onclick="executeRun()" class="run-btn hidden border-gray-300 shadow-sm bg-white hover:bg-blue-50">
+                         <i class="fas fa-play-circle text-blue-600"></i> Run <i class="fas fa-chevron-down text-[8px] ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="progress-view" class="hidden p-8 text-center h-full flex flex-col justify-center">
+                <div id="loading-area">
+                    <div class="mb-4 text-xs font-bold text-gray-700">Exportando capas...</div>
+                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden mb-6">
+                        <div id="progress-bar" class="h-full bg-green-500 w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+                <div id="success-area" class="hidden animate-bounce-short">
+                    <i class="fas fa-check-circle text-green-500 text-6xl mb-3"></i>
+                    <p class="text-xs font-bold uppercase">¡Éxito!</p>
+                    <button onclick="resetTool()" class="bg-blue-800 text-white px-4 py-1 rounded text-xs mt-4">Reiniciar</button>
+                </div>
+            </div>
+        </div> </div> <div class="mt-8">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-folder-open mr-3 text-yellow-600"></i> Estructura de Salida (.shp)
+        </h3>
+        <div class="card bg-gray-50 border-dashed border-2 border-gray-300 p-4 text-center">
+            <p class="text-sm text-gray-600 mb-6">
+                Al finalizar el proceso, un "Shapefile" se compone de varias extensiones que deben permanecer juntas:
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-3 rounded border flex items-center shadow-sm">
+                    <i class="far fa-file-code text-blue-500 text-2xl mr-3"></i>
+                    <div class="text-left">
+                        <span class="block font-bold text-xs">archivo.shp</span>
+                        <span class="text-[10px] text-gray-500">Geometría de los datos.</span>
+                    </div>
+                </div>
+                <div class="bg-white p-3 rounded border flex items-center shadow-sm">
+                    <i class="far fa-file-alt text-green-500 text-2xl mr-3"></i>
+                    <div class="text-left">
+                        <span class="block font-bold text-xs">archivo.dbf</span>
+                        <span class="text-[10px] text-gray-500">Tabla de atributos.</span>
+                    </div>
+                </div>
+                <div class="bg-white p-3 rounded border flex items-center shadow-sm">
+                    <i class="far fa-file-archive text-purple-500 text-2xl mr-3"></i>
+                    <div class="text-left">
+                        <span class="block font-bold text-xs">archivo.shx</span>
+                        <span class="text-[10px] text-gray-500">Índice de la geometría.</span>
+                    </div>
+                </div>
+                <div class="bg-white p-3 rounded border flex items-center shadow-sm">
+                    <i class="fas fa-globe-americas text-red-500 text-2xl mr-3"></i>
+                    <div class="text-left">
+                        <span class="block font-bold text-xs">archivo.prj</span>
+                        <span class="text-[10px] text-gray-500">Sistema de Coordenadas.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="alert-box mt-4 mb-0 bg-blue-50 border-blue-400 p-2">
+                <p class="text-xs text-blue-800 font-semibold">
+                    <i class="fas fa-info-circle mr-2"></i> 
+                    Pro-tip: Comprime todos estos archivos en un único archivo .ZIP para compartirlos.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+   
+    <section id="dominios" class="section-content hidden"><h1 class="text-3xl font-bold mb-6">Dominios y Atributos</h1><div class="card">Contenido próximamente.</div></section>
+<section id="exportar" class="section-content hidden">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">KMZ y Exportación</h1>
+    <p class="text-gray-600 mb-6 italic">Convierte tus capas de ArcGIS Pro a archivos KML/KMZ para visualizarlos en Google Earth.</p>
+
+    <div id="instruction-box-kml" class="step-instruction bg-slate-700 text-white p-4 rounded-lg mb-6 flex justify-between items-center shadow-md">
+        <span id="instruction-text-kml"><i class="fas fa-search mr-2"></i> <b>PASO 1:</b> En el panel de Geoprocessing, busca la herramienta <b>"Layer To KML"</b>.</span>
+        <button onclick="resetKMLTool()" class="text-[10px] bg-white text-slate-900 px-3 py-1 rounded font-bold uppercase hover:bg-slate-100 transition">Reiniciar</button>
+    </div>
+
+    <div class="arc-window border border-gray-300 rounded-lg overflow-hidden flex bg-white shadow-xl" style="height: 550px;">
+        <div class="arc-panel-left w-1/4 bg-gray-50 border-r border-gray-200 flex flex-col">
+            <div class="arc-header bg-gray-100 p-2 border-b text-[11px] font-bold">Contents</div>
+            <div class="p-3 space-y-2">
+                <div class="flex items-center text-[11px] text-gray-700"><i class="fas fa-check-square mr-2 text-blue-600"></i> <i class="fas fa-layer-group text-blue-400 mr-1"></i> Fiber Cable</div>
+                <div class="flex items-center text-[11px] text-gray-700"><i class="fas fa-check-square mr-2 text-blue-600"></i> <i class="fas fa-layer-group text-blue-400 mr-1"></i> Splice Case</div>
+            </div>
+        </div>
+
+        <div class="arc-main-view flex-grow bg-slate-100 relative flex items-center justify-center border-r border-gray-200">
+            <div class="text-center opacity-30">
+                <i class="fas fa-earth-americas text-7xl mb-2"></i>
+                <p class="text-[10px] font-bold uppercase">Google Earth Ready</p>
+            </div>
+        </div>
+
+        <div class="arc-panel-right w-1/3 flex flex-col">
+            <div class="arc-header bg-gray-100 p-2 border-b text-[11px] font-bold">Geoprocessing</div>
+            
+            <div id="kml-search-view" class="p-4">
+                <input type="text" id="kml-search-input" class="w-full border p-2 text-xs pulsing outline-none" placeholder="Escribe 'Layer to KML'..." onkeyup="handleKMLSearch(event)">
+                <div id="kml-results" class="mt-4 hidden">
+                    <div class="p-3 border rounded-md hover:bg-blue-50 cursor-pointer flex items-center gap-3 transition" onclick="openKMLTool()">
+                        <div class="bg-blue-100 p-2 rounded text-blue-600"><i class="fas fa-file-export"></i></div>
+                        <div>
+                            <div class="text-xs font-bold">Layer To KML</div>
+                            <div class="text-[9px] text-gray-400 uppercase">Conversion Tools</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="kml-tool-view" class="hidden flex flex-col h-full bg-white">
+                <div class="p-3 border-b flex items-center gap-2 bg-gray-50">
+                    <i class="fas fa-arrow-left text-xs cursor-pointer text-gray-500" onclick="resetKMLTool()"></i>
+                    <span class="text-xs font-bold">Layer To KML</span>
+                </div>
+                <div class="p-4 space-y-4 flex-grow overflow-y-auto">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-600">Layer</label>
+                        <select id="kml-layer-select" class="w-full border p-1.5 text-xs outline-none" onchange="checkKMLReady()">
+                            <option value="">Selecciona una capa...</option>
+                            <option value="fiber">Fiber Cable</option>
+                            <option value="splice">Splice Case</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-600">Output File (.kmz)</label>
+                        <div class="flex">
+                            <input type="text" class="w-full border p-1.5 text-xs bg-gray-50" value="C:\Users\Export\Red_Fibra.kmz" readonly>
+                            <div class="bg-gray-200 px-2 flex items-center border-y border-r text-yellow-600"><i class="fas fa-folder"></i></div>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-600">Layer Output Scale</label>
+                        <input type="number" class="w-full border p-1.5 text-xs" value="0">
+                    </div>
+                </div>
+                <div class="p-3 bg-gray-50 border-t flex justify-end">
+                    <button id="kml-run-btn" class="bg-white border px-6 py-1.5 text-xs font-bold rounded shadow-sm opacity-50 cursor-not-allowed transition" onclick="runKML()">
+                        <i class="fas fa-play mr-2 text-blue-600"></i> Run
+                    </button>
+                </div>
+            </div>
+
+            <div id="kml-success-view" class="hidden p-8 text-center h-full flex flex-col justify-center items-center">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mb-4 animate-bounce">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h4 class="text-sm font-bold text-gray-800">¡Exportación Finalizada!</h4>
+                <p class="text-[10px] text-gray-500 mt-2">El archivo .kmz está listo para Google Earth.</p>
+                <button onclick="resetKMLTool()" class="mt-6 text-[10px] font-bold text-blue-600 hover:underline uppercase">Exportar otra capa</button>
+            </div>
+        </div>
+    </div>
+</section>
+    <section id="paquetes" class="section-content hidden"><h1 class="text-3xl font-bold mb-6">Empaquetado (.mpkx)</h1><div class="card">Contenido próximamente.</div></section>
+
+</div>
+<script>
+    // --- NAVEGACIÓN GENERAL ---
+    function showSection(id) {
+        document.querySelectorAll('.section-content').forEach(sec => sec.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active-nav'));
+        
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active-nav');
+        }
+        window.scrollTo(0,0);
+    }
+
+    // --- DATOS DE LA INTERFAZ ---
+    const hotspotData = {
+        ribbon: {
+            t: "Cinta de Opciones (Ribbon)",
+            c: `<div><p class='font-bold mb-2 text-blue-400'>Herramientas de Control</p>
+                <ul class='list-disc ml-4 space-y-1'>
+                    <li><b>Map:</b> Exploración básica.</li>
+                    <li><b>Add Data:</b> Icono "+" amarillo para cargar capas.</li>
+                    <li><b>Edit:</b> Imprescindible para dibujo y Snapping.</li>
+                </ul></div>
+                <div><p class='font-bold mb-2 text-blue-400'>Buscador</p>
+                <p>Usa <b>Command Search</b> para hallar cualquier herramienta.</p></div>`
+        },
+        contents: {
+            t: "Panel de Contenidos (Contents)",
+            c: `<div><p>Gestión de capas, simbología y visibilidad. Haz clic derecho en los símbolos para cambios rápidos.</p></div>`
+        },
+        map: {
+            t: "Vista del Mapa",
+            c: `<div><p class='font-bold mb-2'>Navegación</p>
+                <p>Lienzo principal. Truco: Mantén <kbd>C</kbd> para moverte (Pan) sin soltar tu herramienta de dibujo.</p></div>`
+        },
+        attr: {
+            t: "Panel de Atributos (Attributes)",
+            c: `<div><p>Visualiza y edita datos alfanuméricos. El <b>OBJECTID</b> es el identificador único.</p></div>`
+        }
+    };
+
+    // --- FUNCIONES DE HOTSPOTS ---
+    function showHotspot(key) {
+        const panel = document.getElementById('info-panel');
+        document.getElementById('hs-title').innerText = hotspotData[key].t;
+        document.getElementById('hs-content').innerHTML = hotspotData[key].c;
+        panel.style.display = 'block';
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function closeHotspot() {
+        document.getElementById('info-panel').style.display = 'none';
+    }
+
+    // --- LÓGICA DEL SIMULADOR (INDETERMINADA/GLOBAL) ---
+    // Referencias a elementos
+    const getEl = (id) => document.getElementById(id);
+
+    function handleSearch(e) {
+        const val = e.target.value.toLowerCase();
+        const results = getEl('search-results');
+        const input = getEl('tool-search');
+        const instruction = getEl('instruction-text');
+
+        if (val.includes('geodata') || val.includes('crear shapefiles')) {
+            results.classList.remove('hidden');
+            input.classList.remove('pulsing');
+            instruction.innerHTML = `<i class="fas fa-hand-pointer mr-2"></i> <b>PASO 2:</b> Selecciona el resultado <b>Geodatabase To Shape</b> para abrir sus parámetros.`;
+        } else {
+            results.classList.add('hidden');
+        }
+    }
+
+    function openTool() {
+        getEl('search-view').classList.add('hidden');
+        getEl('tool-view').classList.remove('hidden');
+        getEl('instruction-text').innerHTML = `<i class="fas fa-layer-group mr-2"></i> <b>PASO 3:</b> En <b>Input Features</b>, selecciona las capas (ej: <b>Fiber Cable</b>).`;
+    }
+
+    function addLayer() {
+        const select = getEl('layer-select');
+        const layer = select.value;
+        if (!layer) return;
+        if (getEl(`chip-${layer.replace(/\s+/g, '')}`)) return;
+
+        const layerChip = document.createElement('div');
+        layerChip.id = `chip-${layer.replace(/\s+/g, '')}`;
+        layerChip.className = "flex justify-between items-center bg-blue-50 p-1.5 px-3 border border-blue-100 text-[10px] rounded";
+        layerChip.innerHTML = `<span>${layer}</span> <i class="fas fa-times text-gray-400 cursor-pointer hover:text-red-500" onclick="this.parentElement.remove()"></i>`;
+        getEl('selected-layers').appendChild(layerChip);
+        
+        getEl('input-features-box').classList.remove('pulsing');
+        getEl('run-btn').classList.remove('hidden');
+        getEl('run-btn').classList.add('pulsing');
+        getEl('output-box').classList.add('pulsing');
+        
+        getEl('instruction-text').innerHTML = `
+            <div>
+                <i class="fas fa-rocket mr-2"></i> <b>PASO 4:</b> Haz clic en <b>Run</b>. 
+                <div class="warning-step">
+                    <i class="fas fa-exclamation-triangle"></i> ¡AVISO! Asegúrate de haber seleccionado o creado la carpeta de destino correcta antes de ejecutar.
+                </div>
+            </div>`;
+    }
+
+    function executeRun() {
+        getEl('tool-view').classList.add('hidden');
+        getEl('progress-view').classList.remove('hidden');
+        getEl('run-btn').classList.remove('pulsing');
+        getEl('output-box').classList.remove('pulsing');
+        
+        let progress = 0;
+        const bar = getEl('progress-bar');
+        const interval = setInterval(() => {
+            progress += 10;
+            bar.style.width = progress + '%';
+            if (progress >= 100) {
+                clearInterval(interval);
+                getEl('loading-area').classList.add('hidden');
+                getEl('success-area').classList.remove('hidden');
+                getEl('instruction-box').classList.replace('bg-blue-600', 'bg-green-600');
+                getEl('instruction-text').innerHTML = `<i class="fas fa-check-double mr-2"></i> <b>PROCESO FINALIZADO.</b>`;
+            }
+        }, 150);
+    }
+
+    function resetTool() {
+        getEl('search-view').classList.remove('hidden');
+        getEl('tool-view').classList.add('hidden');
+        getEl('progress-view').classList.add('hidden');
+        getEl('success-area').classList.add('hidden');
+        getEl('loading-area').classList.remove('hidden');
+        getEl('search-results').classList.add('hidden');
+        getEl('output-box').classList.remove('pulsing');
+        
+        getEl('tool-search').value = '';
+        getEl('tool-search').classList.add('pulsing');
+        getEl('layer-select').value = '';
+        getEl('selected-layers').innerHTML = '';
+        getEl('progress-bar').style.width = '0%';
+        getEl('run-btn').classList.add('hidden');
+        
+        getEl('instruction-box').classList.replace('bg-green-600', 'bg-blue-600');
+        getEl('instruction-text').innerHTML = `<i class="fas fa-search mr-2"></i> <b>PASO 1:</b> En el panel de Geoprocessing, escribe rápido <b>"geodata"</b> para buscar la herramienta.`;
+    }
+
+    // --- FALLBACK IMAGEN ---
+    document.getElementById('img-interfaz').onerror = function() {
+        this.src = "https://pro.arcgis.com/es/pro-app/latest/get-started/get-started-with-arcgis-pro/GUID-F01211E1-92D9-4D34-979C-5D64C597D3C1-web.png";
+    };
+</script>
+
+</body>
+</html>

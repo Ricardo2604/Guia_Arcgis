@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Referencia ArcGIS Pro - Empresa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --arcgis-blue: #005e95;
+            --arcgis-dark: #1a1a1a;
+            --arcgis-light: #f4f4f4;
+            --arcgis-accent: #007ac2;
+            --hotspot-blue: #007ac2;
+            /* Variables del simulador */
+            --arcgis-border: #d0d0d0;
+            --arcgis-header: #f3f3f3;
+            /* Variables responsive */
+            --sidebar-width: 260px;
+            --content-padding: 40px;
+            --sidebar-z: 200;
+            --overlay-z: 190;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--arcgis-light);
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .sidebar {
+            background-color: var(--arcgis-dark);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            color: white;
+            overflow-y: auto;
+            z-index: var(--sidebar-z);
+            transition: transform 0.3s ease;
+        }
+
+        /* Hamburger button — visible solo en móvil */
+        #sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: calc(var(--sidebar-z) + 10);
+            background: var(--arcgis-dark);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 40px;
+            height: 40px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+        }
+
+        /* Overlay oscuro detrás del sidebar en móvil */
+        #sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: var(--overlay-z);
+        }
+        #sidebar-overlay.active { display: block; }
+
+        /* Responsive: móvil */
+        @media (max-width: 767px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.sidebar-open {
+                transform: translateX(0);
+            }
+            #sidebar-toggle {
+                display: flex;
+            }
+        }
+        /* Añadir estos estilos para que los nuevos elementos coincidan con el diseño */
+.section-header {
+    background-color: var(--arcgis-blue);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 6px 6px 0 0;
+    font-weight: bold;
+    margin: -25px -25px 20px -25px; /* Ajuste para que toque los bordes de la card */
+    display: flex;
+    align-items: center;
+}
+
+.step-badge {
+    background-color: var(--arcgis-blue);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+        .content {
+            margin-left: var(--sidebar-width);
+            padding: var(--content-padding);
+        }
+        @media (max-width: 767px) {
+            .content {
+                margin-left: 0;
+                padding: 60px 16px 24px 16px;
+            }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .content {
+                padding: 24px;
+            }
+        }
+        .nav-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+        }
+        .nav-item:hover, .active-nav {
+            background-color: #333;
+            border-left: 4px solid var(--arcgis-blue);
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .img-container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+            text-align: center;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background-color: var(--arcgis-blue);
+            color: white;
+            border-radius: 50%;
+            font-size: 14px;
+            margin-right: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .alert-box {
+            background-color: #fff4e5;
+            border-left: 4px solid #ffa117;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .alert-save {
+            border-left: 5px solid #e74c3c;
+            background-color: #fdf2f2;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .img-caption {
+            background: #eee;
+            padding: 8px;
+            font-size: 0.75rem;
+            color: #666;
+            font-style: italic;
+        }
+        .tool-badge {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        /* Estilos Guía Interactiva */
+        .viewport-container {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            border-radius: 8px;
+        }
+        .wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .main-img {
+            max-height: 70vh;
+            max-width: 100%;
+            display: block;
+        }
+        .hotspot {
+            position: absolute;
+            background: rgba(0, 122, 194, 0);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 20;
+        }
+        .hotspot:hover {
+            background: rgba(0, 122, 194, 0.15);
+            border-color: var(--hotspot-blue);
+            box-shadow: 0 0 20px rgba(0, 122, 194, 0.4);
+        }
+        /* Indicador visual pulsante en cada hotspot */
+        .hotspot::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 14px;
+            height: 14px;
+            background: var(--hotspot-blue);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 0 rgba(0, 122, 194, 0.5);
+            animation: hotspot-pulse 2s infinite;
+            opacity: 0.9;
+        }
+        @keyframes hotspot-pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(0, 122, 194, 0.5); }
+            70%  { box-shadow: 0 0 0 8px rgba(0, 122, 194, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 122, 194, 0); }
+        }
+        .hotspot:hover::before {
+            animation: none;
+            background: white;
+            border-color: var(--hotspot-blue);
+        }
+        #info-panel {
+            background: #2b2b2b;
+            border-top: 4px solid var(--hotspot-blue);
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+            color: #efefef;
+        }
+        kbd {
+            background: #444;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            border: 1px solid #666;
+            color: white;
+        }
+  /* Simulador ArcGIS Pro Style */
+        .arc-window {
+            background: #fff;
+            border: 1px solid var(--arcgis-border);
+            display: flex;
+            flex-direction: row;
+            height: 620px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .arc-panel-left {
+            width: 220px;
+            flex-shrink: 0;
+            background: var(--arcgis-header);
+            border-right: 1px solid var(--arcgis-border);
+            display: flex;
+            flex-direction: column;
+        }
+        .arc-panel-right {
+            width: 340px;
+            flex-shrink: 0;
+            border-left: 1px solid var(--arcgis-border);
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .arc-main-view {
+            flex-grow: 1;
+            min-width: 0;
+            position: relative;
+            background-color: #e5e5e5;
+            background-image: linear-gradient(#dcdcdc 1px, transparent 1px), linear-gradient(90deg, #dcdcdc 1px, transparent 1px);
+            background-size: 25px 25px;
+            overflow: hidden;
+        }
+        /* Tablet: ocultar panel Contents */
+        @media (max-width: 1023px) {
+            .arc-panel-left { display: none; }
+            .arc-panel-right { width: 280px; }
+        }
+        /* Móvil: apilar paneles verticalmente */
+        @media (max-width: 767px) {
+            .arc-window {
+                flex-direction: column;
+                height: auto;
+                max-height: none;
+            }
+            .arc-panel-right {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid var(--arcgis-border);
+                min-height: 320px;
+            }
+            .arc-main-view { min-height: 140px; }
+            /* Tipografía mínima legible en el simulador */
+            .arc-window .text-\[8px\],
+            .arc-window .text-\[9px\]  { font-size: 0.7rem !important; }
+            .arc-window .text-\[10px\],
+            .arc-window .text-\[11px\] { font-size: 0.75rem !important; }
+        }
+
+        .arc-header {
+            padding: 8px 12px;
+            background: var(--arcgis-header);
+            border-bottom: 1px solid var(--arcgis-border);
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Tool UI Elements */
+        .search-bar {
+            border: 1px solid var(--arcgis-border);
+            padding: 4px 8px;
+            width: 100%;
+            font-size: 0.8rem;
+            outline: none;
+        }
+        .tool-parameter {
+            margin-bottom: 12px;
+        }
+        .tool-label {
+            display: block;
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+            color: #444;
+        }
+        .tool-input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--arcgis-border);
+            padding: 1px;
+            background: #fff;
+        }
+        .tool-input {
+            flex-grow: 1;
+            border: none;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            outline: none;
+            background: transparent;
+        }
+        .folder-icon {
+            padding: 2px 6px;
+            background: #f8f8f8;
+            cursor: pointer;
+            border-left: 1px solid var(--arcgis-border);
+            color: #d4a017;
+        }
+        .run-btn {
+            background: #fff;
+            border: 1px solid var(--arcgis-border);
+            padding: 5px 15px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .run-btn:hover { background: #f2f2f2; }
+        .run-btn i { color: var(--arcgis-blue); }
+
+        .pulsing {
+            animation: pulse-blue 1.5s infinite;
+        }
+        @keyframes pulse-blue {
+            0% { box-shadow: 0 0 0 0 rgba(0, 94, 149, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 94, 149, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 94, 149, 0); }
+        }
+
+        .step-instruction {
+            background: var(--arcgis-blue);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 80px;
+        }
+        .warning-step {
+            background: #f59e0b;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 0.85rem;
+        }
+        .img-container {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            margin: 20px 0;
+            padding: 15px;
+            position: relative;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.3s;
+        }
+        .img-container:hover {
+            border-color: var(--arcgis-blue);
+        }
+
+        /* =====================
+           REPORT GALLERY
+           ===================== */
+        .report-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 16px;
+        }
+        .report-page-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .report-page-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+            transform: translateY(-2px);
+        }
+        .report-page-card .rpc-img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            object-position: top;
+            border-bottom: 2px solid #e2e8f0;
+            background: #fff;
+        }
+        .report-page-card .rpc-body {
+            padding: 14px 16px 18px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .report-page-card .rpc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #2563eb;
+            background: #dbeafe;
+            border-radius: 999px;
+            padding: 3px 10px;
+            margin-bottom: 8px;
+            width: fit-content;
+        }
+        .report-page-card .rpc-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .report-page-card .rpc-desc {
+            font-size: 0.78rem;
+            color: #4b5563;
+            line-height: 1.55;
+            flex: 1;
+        }
+
+        /* =====================
+           CLASES HUÉRFANAS
+           ===================== */
+        .route-path {
+            background: #f0f4ff;
+            border: 1px solid #c7d7f4;
+            border-left: 4px solid var(--arcgis-blue);
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin: 12px 0;
+            color: #1a3a5c;
+        }
+        .critical-alert {
+            display: flex;
+            align-items: flex-start;
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-left: 5px solid #e53e3e;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 24px;
+        }
+        .pro-tip {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 10px 14px;
+            border-radius: 4px;
+            color: #78350f;
+        }
+        .attribute-tag {
+            background: #e2e8f0;
+            color: #2d3748;
+            font-family: monospace;
+            font-size: 0.8rem;
+            padding: 1px 6px;
+            border-radius: 3px;
+        }
+        .img-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .img-placeholder-content {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+        }
+        .placeholder-text {
+            display: none;
+        }
+
+        /* =====================
+           NAVEGACIÓN ANT/SIG
+           ===================== */
+        .section-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            gap: 12px;
+        }
+        .section-nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            color: var(--arcgis-blue);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .section-nav-btn:hover {
+            background: var(--arcgis-blue);
+            color: white;
+            border-color: var(--arcgis-blue);
+        }
+        .section-nav-label {
+            font-size: 0.7rem;
+            color: #718096;
+            display: block;
+            font-weight: 400;
+        }
+        .section-nav-btn:hover .section-nav-label {
+            color: rgba(255,255,255,0.75);
+        }
+
+    </style>
+</head>
+<body>
+
+<button id="sidebar-toggle" aria-label="Menú" aria-expanded="false" aria-controls="sidebar">
+    <i class="fas fa-bars"></i>
+</button>
+<div id="sidebar-overlay"></div>
+
+<div id="sidebar" class="sidebar">
+    <div class="p-6 text-center border-b border-gray-700">
+        <i class="fas fa-map-marked-alt text-4xl mb-2 text-blue-400"></i>
+        <h2 class="text-xl font-bold uppercase tracking-wider leading-tight" data-i18n="sidebar-title">Manual ArcGIS Pro</h2>
+        <p class="text-xs text-gray-400" data-i18n="sidebar-subtitle">Guía de Referencia Interna</p>
+        <button id="lang-btn" onclick="toggleLanguage()" style="margin-top:10px;font-size:0.75rem;background:#007ac2;color:white;border:none;padding:5px 14px;border-radius:999px;cursor:pointer;font-weight:700;letter-spacing:0.05em;transition:background 0.2s;" onmouseover="this.style.background='#005e95'" onmouseout="this.style.background='#007ac2'">🌐 EN</button>
+    </div>
+    <nav class="mt-4">
+        <div class="nav-item active-nav" onclick="showSection('inicio', this)"><i class="fas fa-desktop w-6 mr-3"></i> <span data-i18n="nav-inicio">Interfaz y Paneles</span></div>
+        <div class="nav-item" onclick="showSection('crear-capas', this)"><i class="fas fa-layer-group w-6 mr-3"></i> <span data-i18n="nav-crear-capas">Creación de Capas</span></div>
+        <div class="nav-item" onclick="showSection('edicion', this)"><i class="fas fa-edit w-6 mr-3"></i> <span data-i18n="nav-edicion">Dibujo y Edición</span></div>
+        <div class="nav-item" onclick="showSection('datos', this)"><i class="fas fa-database w-6 mr-3"></i> <span data-i18n="nav-datos">Crear Shapefiles</span></div>
+        <div class="nav-item" onclick="showSection('dominios', this)"><i class="fas fa-list-ul w-6 mr-3"></i> <span data-i18n="nav-dominios">Dominios y Atributos</span></div>
+        <div class="nav-item" onclick="showSection('exportar', this)"><i class="fas fa-file-export w-6 mr-3"></i> <span data-i18n="nav-exportar">KMZ y Exportación</span></div>
+        <div class="nav-item" onclick="showSection('paquetes', this)"><i class="fas fa-box-open w-6 mr-3"></i> <span data-i18n="nav-paquetes">Empaquetado (.mpkx)</span></div>
+        <div class="nav-item" onclick="showSection('appeit', this)"><i class="fas fa-file-pdf w-6 mr-3"></i> <span data-i18n="nav-appeit">APPEIT (PDF)</span></div>
+    </nav>
+</div>
+
+<div class="content">
+    
+    <section id="inicio" class="section-content">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6" data-i18n="inicio-h1">Interfaz y Paneles Principales</h1>
+
+        <div class="card p-0 overflow-hidden bg-[#202020] border border-gray-800">
+            <div class="bg-[#202020] p-4 border-b border-gray-700 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-white flex items-center">
+                    <i class="fas fa-mouse-pointer mr-3 text-blue-500"></i> <span data-i18n="inicio-explorer-title">Explorador Interactivo</span>
+                </h2>
+                <span class="text-xs text-gray-400 italic" data-i18n="inicio-explorer-hint">Haz clic en las zonas de la imagen</span>
+            </div>
+
+            <div class="viewport-container">
+                <div class="wrapper">
+                    <img src="Interfaz.png" alt="Interfaz ArcGIS Pro" class="main-img" id="img-interfaz">
+                    <div class="hotspot" style="top:0; left:0; width:100%; height:18%;" onclick="showHotspot('ribbon')" title="Cinta de Opciones (Ribbon)"></div>
+                    <div class="hotspot" style="top:18%; left:0; width:17%; height:82%;" onclick="showHotspot('contents')" title="Panel Contents"></div>
+                    <div class="hotspot" style="top:18%; left:17%; width:66%; height:82%;" onclick="showHotspot('map')" title="Vista del Mapa"></div>
+                    <div class="hotspot" style="top:18%; left:83%; width:17%; height:82%;" onclick="showHotspot('attr')" title="Panel Atributos"></div>
+                </div>
+            </div>
+
+            <div id="info-panel">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1 pr-10">
+                        <h2 id="hs-title" class="text-2xl font-bold text-blue-400 mb-2">Título</h2>
+                        <div id="hs-content" class="text-sm text-gray-300 leading-relaxed grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+                    </div>
+                    <button onclick="closeHotspot()" class="text-gray-500 hover:text-white text-3xl">&times;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="crear-capas" class="section-content hidden">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6" data-i18n="crear-capas-h1">Creación Detallada de Capas (Feature Classes)</h1>
+
+        <div class="alert-box">
+            <h4 class="font-bold text-orange-800"><i class="fas fa-exclamation-triangle mr-2"></i> <span data-i18n="crear-capas-alert-h4">Diferencia Importante</span></h4>
+            <p class="text-sm text-orange-900 leading-relaxed" data-i18n="crear-capas-alert-p">
+                Las capas no se crean desde el panel de <strong>Contents</strong>. Para crear una capa nueva, debes usar el panel de <strong>Catalog</strong> (a la derecha).
+            </p>
+        </div>
+
+        <div class="card">
+            <h3 class="text-xl font-semibold mb-6 text-blue-700" data-i18n="crear-capas-card-h3">Proceso Paso a Paso</h3>
+            
+            <div class="space-y-12">
+                <div class="flex items-start flex-col">
+                    <div class="flex items-center mb-3">
+                        <span class="step-number">1</span>
+                        <h4 class="font-bold text-gray-800" data-i18n="crear-capas-step1-h4">Acceso a la Geodatabase</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 ml-10" data-i18n="crear-capas-step1-p">En el panel <strong>Catalog</strong>, expande <strong>Databases</strong>, haz clic derecho en tu .gdb y selecciona <code class="tool-badge">New</code> > <code class="tool-badge">Feature Class</code>.</p>
+                    <div class="img-container w-full ml-0 md:ml-10 md:w-2/3">
+                        <img src="capas.png" alt="Menú New Feature Class" onerror="this.src='https://via.placeholder.com/600x300?text=Menu+New+Feature+Class'">
+                        <div class="img-caption" data-i18n="crear-capas-step1-caption">Menú contextual para crear una nueva clase de entidad.</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start flex-col">
+                    <div class="flex items-center mb-3">
+                        <span class="step-number">2</span>
+                        <h4 class="font-bold text-gray-800" data-i18n="crear-capas-step2-h4">Definición de Identidad</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 ml-10" data-i18n="crear-capas-step2-p">Establece el <strong>Name</strong> (sin espacios) y el <strong>Alias</strong>. Selecciona el tipo de geometría (Punto, Línea o Polígono).</p>
+                    <div class="img-container w-full ml-0 md:ml-10 md:w-2/3">
+                        <img src="paso2capas.png" alt="Definición de Nombre y Tipo" onerror="this.src='https://via.placeholder.com/600x300?text=Nombre+y+Geometria'">
+                        <div class="img-caption" data-i18n="crear-capas-step2-caption">Configuración inicial del asistente.</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start flex-col">
+                    <div class="flex items-center mb-3">
+                        <span class="step-number">3</span>
+                        <h4 class="font-bold text-gray-800" data-i18n="crear-capas-step3-h4">Configuración de Campos (Fields)</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 ml-10" data-i18n="crear-capas-step3-p">Define las columnas de tu base de datos. Agrega campos como "Estado", "Material" o "Fecha".</p>
+                    <div class="img-container w-full ml-0 md:ml-10 md:w-2/3">
+                        <img src="paso3capas.png" alt="Tabla de Campos" onerror="this.src='https://via.placeholder.com/600x300?text=Configuracion+de+Campos'">
+                        <div class="img-caption" data-i18n="crear-capas-step3-caption">Definición de nombres de campo y tipos de datos.</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start flex-col">
+                    <div class="flex items-center mb-3">
+                        <span class="step-number">4</span>
+                        <h4 class="font-bold text-gray-800" data-i18n="crear-capas-step4-h4">Sistema de Coordenadas</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 ml-10" data-i18n="crear-capas-step4-p">Busca y selecciona el sistema de coordenadas oficial para garantizar la precisión geográfica.</p>
+                    <div class="img-container w-full ml-0 md:ml-10 md:w-2/3">
+                        <img src="paso4capas.png" alt="Sistema de Coordenadas" onerror="this.src='https://via.placeholder.com/600x300?text=Sistema+de+Coordenadas'">
+                        <div class="img-caption" data-i18n="crear-capas-step4-caption">Selección del Sistema de Referencia Espacial.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN EDICIÓN -->
+    <!-- SECCIÓN DIBUJO Y EDICIÓN -->
+    <section id="edicion" class="section-content hidden">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2" data-i18n="edicion-h1">Dibujo y Edición de Capas</h1>
+        <p class="text-gray-500 mb-8" data-i18n="edicion-subtitle">Flujo de trabajo estándar para la creación de elementos geográficos.</p>
+        
+        <!-- DIVISIÓN 1: ACTIVACIÓN -->
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-power-off mr-2"></i> <span data-i18n="edicion-div1-header">I. INICIO DE LA EDICIÓN</span>
+            </div>
+            <p class="text-gray-600 mb-4" data-i18n="edicion-div1-p">
+                Para comenzar a dibujar, primero debemos localizar las herramientas en la cinta superior. A diferencia de otros softwares, aquí la edición está integrada en el flujo constante.
+            </p>
+            <div class="flex items-center p-3 bg-gray-50 rounded mb-4">
+                <span class="step-badge">1</span>
+                <p class="text-sm" data-i18n="edicion-div1-step1">Dirígete a la pestaña <strong>Edit</strong> y busca el grupo <strong>Features</strong>.</p>
+            </div>
+            
+            <!-- CONTENEDOR IMAGEN 1 -->
+            <div class="img-container">
+               
+                <img src="Edit01dibujo.png" alt="Pestaña Edit en ArcGIS Pro">
+                <p class="placeholder-text">
+                    
+                </p>
+            </div>
+        </div>
+
+        <!-- DIVISIÓN 2: PLANTILLAS -->
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-clone mr-2"></i> <span data-i18n="edicion-div2-header">II. SELECCIÓN DE PLANTILLAS (TEMPLATES)</span>
+            </div>
+            <p class="text-gray-600 mb-4" data-i18n="edicion-div2-p">
+                Al presionar el botón <strong>Create</strong>, aparecerá un panel a la derecha. Este panel muestra todas las capas editables de tu mapa.
+            </p>
+            <div class="flex items-center p-3 bg-gray-50 rounded mb-4">
+                <span class="step-badge">2</span>
+                <p class="text-sm" data-i18n="edicion-div2-step2">Selecciona la capa en la que deseas trabajar para ver sus herramientas de dibujo.</p>
+            </div>
+
+            <!-- CONTENEDOR IMAGEN 2 -->
+            <div class="img-container">
+                
+                <img src="create02dibujo.png" alt="Pestaña Edit en ArcGIS Pro">
+                <p class="placeholder-text">
+                   
+                </p>
+            </div>
+        </div>
+
+        <!-- DIVISIÓN 3: HERRAMIENTAS DE CONSTRUCCIÓN -->
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-draw-polygon mr-2"></i> <span data-i18n="edicion-div3-header">III. HERRAMIENTAS DE CONSTRUCCIÓN</span>
+            </div>
+            <p class="text-gray-600 mb-4" data-i18n="edicion-div3-p">
+                Una vez seleccionada la capa, aparecerá una barra flotante en el mapa o debajo del panel de creación con métodos de dibujo específicos.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="border p-3 rounded">
+                    <h5 class="font-bold text-blue-600 mb-1 text-sm" data-i18n="edicion-div3-methods-h5">Métodos Comunes:</h5>
+                    <ul class="text-xs space-y-1 text-gray-600" data-i18n="edicion-div3-methods">
+                        <li>• <strong>Line:</strong> Clic por cada vértice.</li>
+                        <li>• <strong>Streaming:</strong> Dibuja mientras mueves el mouse.</li>
+                        <li>• <strong>Rectangle/Circle:</strong> Formas geométricas exactas.</li>
+                    </ul>
+                </div>
+                <div class="pro-tip text-xs" data-i18n="edicion-div3-protip">
+                    <strong>Atajo Pro:</strong> Presiona la tecla <strong>F2</strong> para terminar un dibujo (Finish Sketch) sin necesidad de hacer doble clic.
+                </div>
+            </div>
+
+            <!-- CONTENEDOR IMAGEN 3 -->
+            <div class="img-container">
+                
+                <img src="herramienta01construccion.png" alt="Pestaña Edit en ArcGIS Pro">
+                <p class="placeholder-text">                    
+                </p>
+            </div>
+        </div>
+
+        <!-- DIVISIÓN 4: AJUSTE Y GUARDADO -->
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-check-double mr-2"></i> <span data-i18n="edicion-div4-header">IV. AJUSTE (SNAPPING) Y FINALIZACIÓN</span>
+            </div>
+            <p class="text-gray-600 mb-4" data-i18n="edicion-div4-p">
+                Para asegurar la conectividad entre cables y postes, el <strong>Snapping</strong> debe estar activo. Esto hace que el puntero se "pegue" a los elementos existentes.
+            </p>
+
+            <!-- CONTENEDOR IMAGEN 4 -->
+            <div class="img-container">
+               
+                <img src="snapping01dibujo.png" alt="Pestaña Edit en ArcGIS Pro">               
+                <p class="placeholder-text">                    
+                </p>
+            </div>
+
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded mt-4">
+                <h4 class="text-red-700 font-bold mb-1"><i class="fas fa-save mr-2"></i> <span data-i18n="edicion-div4-save-h4">CIERRE CRÍTICO</span></h4>
+                <p class="text-sm text-red-800 italic text-justify" data-i18n="edicion-div4-save-p">
+                    Al terminar de dibujar, es <strong>obligatorio</strong> presionar el botón <strong>Save</strong> del grupo <i>Manage Edits</i>. Si guardas el proyecto (.aprx) pero no guardas la edición de las capas, los dibujos se perderán.
+                </p>
+            </div>
+        </div>
+    </section>
+
+<section id="datos" class="section-content hidden">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2" data-i18n="datos-h1">Crear Shapefiles</h1>
+    <p class="text-gray-600 mb-6 italic" data-i18n="datos-subtitle">Aprende a usar la herramienta para convertir tu base de datos en archivos Shape (.shp).</p>
+
+    <div id="instruction-box" class="step-instruction">
+        <span id="instruction-text"><i class="fas fa-search mr-2"></i> <b>PASO 1:</b> En el panel de Geoprocessing, escribe rápido <b>"geodata"</b> para buscar la herramienta.</span>
+        <button onclick="resetTool()" class="text-[10px] bg-white text-blue-900 px-3 py-1 rounded hover:bg-blue-50 font-bold uppercase transition ml-4" data-i18n="datos-reset-btn">Reiniciar</button>
+    </div>
+
+    <div class="arc-window">
+        <div class="arc-panel-left">
+            <div class="arc-header"><span>Contents</span><i class="fas fa-times text-[10px]"></i></div>
+            <div class="p-3 space-y-1">
+                <div class="text-[10px] text-gray-400 font-bold mb-2 uppercase">Drawing Order</div>
+                <div class="flex items-center text-[11px] font-semibold"><i class="fas fa-check-square mr-2 text-blue-600"></i> <i class="fas fa-layer-group text-orange-400 mr-1"></i> Fiber Cable</div>
+                <div class="flex items-center text-[11px] text-gray-600"><i class="fas fa-check-square mr-2 text-blue-600"></i> <i class="fas fa-layer-group text-orange-400 mr-1"></i> Slack Loop</div>
+                <div class="flex items-center text-[11px] text-gray-600"><i class="fas fa-check-square mr-2 text-blue-600"></i> <i class="fas fa-layer-group text-orange-400 mr-1"></i> Splice Case</div>
+            </div>
+        </div>
+
+        <div class="arc-main-view flex items-center justify-center">
+            <div class="relative z-10 text-center bg-white/60 backdrop-blur-sm p-5 rounded-xl border border-gray-300">
+                <i class="fas fa-globe-americas text-6xl text-gray-400 mb-2"></i>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500" data-i18n="datos-map-view">Vista de Mapa Activa</p>
+            </div>
+        </div>
+
+        <div class="arc-panel-right">
+            <div class="arc-header">
+                <span id="panel-title">Geoprocessing</span>
+                <div class="flex gap-2 text-gray-400"><i class="fas fa-search"></i> <i class="fas fa-thumbtack"></i></div>
+            </div>
+
+            <div id="search-view" class="p-3">
+                <input type="text" id="tool-search" class="search-bar pulsing" placeholder="Busca herramientas aquí..." onkeyup="handleSearch(event)">
+                <div id="search-results" class="mt-4 hidden">
+                    <div class="p-3 hover:bg-blue-50 cursor-pointer border border-blue-100 rounded flex items-center gap-3 transition" onclick="openTool()">
+                        <i class="fas fa-tools text-blue-500"></i>
+                        <div>
+                            <div class="text-xs font-bold" data-i18n="datos-tool-name">Crear Shapefiles</div>
+                            <div class="text-[9px] text-gray-400 uppercase italic" data-i18n="datos-tool-category">Conversion Tools</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tool-view" class="hidden h-full flex flex-col">
+                <div class="p-3 border-b flex items-center justify-between bg-white">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-arrow-left text-xs cursor-pointer text-gray-500" onclick="resetTool()"></i>
+                        <span class="text-xs font-bold text-blue-800 uppercase tracking-tight">Geodatabase To Shape</span>
+                    </div>
+                    <div class="flex gap-2 text-gray-400 text-[10px]">
+                         <i class="fas fa-plus-circle"></i>
+                         <i class="fas fa-question-circle"></i>
+                    </div>
+                </div>
+
+                <div class="px-4 pt-2 flex gap-4 border-b text-[10px] font-bold bg-white">
+                    <span class="text-blue-700 border-b-2 border-blue-700 pb-1 cursor-pointer">Parameters</span>
+                    <span class="text-gray-400 pb-1 cursor-pointer hover:text-gray-600">Environments</span>
+                </div>
+
+                <div class="p-4 flex-grow overflow-y-auto space-y-4 bg-white">
+                    <div class="tool-parameter">
+                        <label class="tool-label flex items-center gap-1">
+                            Input Features <i class="fas fa-info-circle text-[10px] text-gray-300"></i>
+                        </label>
+                        <div class="tool-input-group pulsing" id="input-features-box">
+                            <select id="layer-select" class="tool-input" onchange="addLayer()">
+                                <option value="">Selecciona las capas...</option>
+                                <option value="Fiber Cable">Fiber Cable</option>
+                                <option value="Slack Loop">Slack Loop</option>
+                                <option value="Splice Case">Splice Case</option>
+                            </select>
+                            <div class="folder-icon"><i class="fas fa-folder"></i></div>
+                        </div>
+                        <div id="selected-layers" class="mt-2 space-y-1"></div>
+                    </div>
+
+                    <div class="tool-parameter">
+                        <label class="tool-label">Output Folder</label>
+                        <div class="tool-input-group" id="output-box">
+                            <input type="text" class="tool-input italic text-gray-500" value="FSA">
+                            <div class="folder-icon"><i class="fas fa-folder"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="tool-parameter">
+                        <label class="tool-label">Coded Value Domain Export Mode</label>
+                        <div class="tool-input-group"><select class="tool-input"><option>Values</option><option>Descriptions</option></select></div>
+                    </div>
+
+                    <div class="tool-parameter">
+                        <label class="tool-label">Conversion Method</label>
+                        <div class="tool-input-group"><select class="tool-input"><option>Defense by subtype</option><option>Standard</option></select></div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-gray-50 border-t flex justify-end">
+                    <button id="run-btn" onclick="executeRun()" class="run-btn hidden border-gray-300 shadow-sm bg-white hover:bg-blue-50">
+                         <i class="fas fa-play-circle text-blue-600"></i> Run <i class="fas fa-chevron-down text-[8px] ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="progress-view" class="hidden p-8 text-center h-full flex flex-col justify-center">
+                <div id="loading-area">
+                    <div class="mb-4 text-xs font-bold text-gray-700" data-i18n="datos-exporting">Exportando capas...</div>
+                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden mb-6">
+                        <div id="progress-bar" class="h-full bg-green-500 w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+                <div id="success-area" class="hidden animate-bounce-short">
+                    <i class="fas fa-check-circle text-green-500 text-6xl mb-3"></i>
+                    <p class="text-xs font-bold uppercase" data-i18n="datos-success">¡Éxito!</p>
+                    <button onclick="resetTool()" class="bg-blue-800 text-white px-4 py-1 rounded text-xs mt-4" data-i18n="datos-reset-btn">Reiniciar</button>
+                </div>
+            </div>
+        </div> </div> <div class="mt-8">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-folder-open mr-3 text-yellow-600"></i> <span data-i18n="datos-output-section-h3">Estructura de Salida (.shp)</span>
+        </h3>
+        <div class="card bg-gray-50 border-dashed border-2 border-gray-300 p-4 text-center">
+            <p class="text-sm text-gray-600 mb-6" data-i18n="datos-output-desc">
+                Al finalizar el proceso, un "Shapefile" se compone de varias extensiones que deben permanecer juntas:
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-3 rounded border flex items-center shadow-sm">
+                    <i class="far fa-file-code text-blue-500 text-2xl mr-3"></i>
+                    <div class="text-left">
+                        <span class="block font-bold text-xs">archivo.shp</span>
+                        <span class="text-[10px] text-gray-500" data-i18n="datos-shp-desc">Geometría de los datos.</span>
+                    </div>
+                </div>
+                <div class="bg-white p-3 rounded border flex items-center shadow-sm">
+                    <i class="far fa-file-alt text-green-500 text-2xl mr-3"></i>
+                    <div class="text-left">
+                        <span class="block font-bold text-xs">archivo.dbf</span>
+                        <span class="text-[10px] text-gray-500" data-i18n="datos-dbf-desc">Tabla de atributos.</span>
+                    </div>
+                </div>
+                <div class="bg-white p-3 rounded border flex items-center shadow-sm">
+                    <i class="far fa-file-archive text-purple-500 text-2xl mr-3"></i>
+                    <div class="text-left">
+                        <span class="block font-bold text-xs">archivo.shx</span>
+                        <span class="text-[10px] text-gray-500" data-i18n="datos-shx-desc">Índice de la geometría.</span>
+                    </div>
+                </div>
+                <div class="bg-white p-3 rounded border flex items-center shadow-sm">
+                    <i class="fas fa-globe-americas text-red-500 text-2xl mr-3"></i>
+                    <div class="text-left">
+                        <span class="block font-bold text-xs">archivo.prj</span>
+                        <span class="text-[10px] text-gray-500" data-i18n="datos-prj-desc">Sistema de Coordenadas.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="alert-box mt-4 mb-0 bg-blue-50 border-blue-400 p-2">
+                <p class="text-xs text-blue-800 font-semibold" data-i18n="datos-zip-tip">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Pro-tip: Comprime todos estos archivos en un único archivo .ZIP para compartirlos.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+   
+    <!-- SECCIÓN DOMINIOS -->
+    <section id="dominios" class="section-content hidden">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6" data-i18n="dominios-h1">Dominios y Atributos</h1>
+        <div class="card">
+            <h3 class="text-xl font-semibold mb-4 text-blue-700" data-i18n="dominios-card1-h3">Control de Calidad de Datos</h3>
+            <p class="text-sm text-gray-600 mb-6" data-i18n="dominios-card1-p">Los dominios evitan errores de escritura manual, forzando al usuario a seleccionar valores de una lista predefinida por la empresa.</p>
+
+            <div class="bg-gray-50 border p-6 rounded-lg">
+                <h4 class="font-bold mb-2 text-gray-800 underline" data-i18n="dominios-quick-route-h4">Ruta de acceso rápido:</h4>
+                <p class="text-gray-700 text-sm" data-i18n="dominios-quick-route-p">Para configurar o ver los dominios asociados a una capa específica:</p>
+                <div class="route-path">
+                    Clic derecho sobre la Capa > Data Design > Domains
+                </div>
+            </div>
+
+            <!-- Contenedor para insertar la imagen -->
+            <div class="img-container">
+                <span class="img-label text-blue-600" data-i18n="dominios-img1-label">Referencia: Clic Derecho en Capa</span>
+                <!-- REEMPLAZA EL SRC CON TU IMAGEN -->
+                <i class="fas fa-mouse-pointer text-4xl mb-4 text-blue-400"></i>
+                <img src="Dominio01.png" alt="[Imagen: Menú Contextual de Capa]" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="img-placeholder-content">
+                    
+                   
+                    
+                </div>
+            </div>
+            
+            <!-- Contenedor 2: Explicación de la ventana (Imagen subida por usuario) -->
+            <div class="img-container">
+                <span class="img-label text-blue-600" data-i18n="dominios-img2-label">Paso 2: Configuración de la Tabla</span>
+                <img src="dominio02.png" alt="[Imagen: Detalle de la Ventana de Dominios]" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="img-placeholder-content">
+                    <i class="fas fa-table text-4xl mb-4 text-blue-400"></i>
+                    <p class="font-bold text-gray-800">Insertar Captura de Ventana de Dominios</p>
+                    <p class="text-xs mt-2 px-10">Muestra la relación entre el nombre del dominio a la izquierda y sus códigos/descripciones a la derecha.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                <div class="p-4 border rounded bg-white">
+                    <p class="font-bold text-blue-800 mb-2" data-i18n="dominios-config-h3">1. Configuración</p>
+                    <p class="text-sm text-gray-600" data-i18n="dominios-config-p">Crea el nombre del dominio y define los códigos (valor real) y descripciones (lo que ve el usuario).</p>
+                </div>
+                <div class="p-4 border rounded bg-white">
+                    <p class="font-bold text-blue-800 mb-2" data-i18n="dominios-assign-h3">2. Asignación</p>
+                    <p class="text-sm text-gray-600" data-i18n="dominios-assign-p">Ve a <strong>Data Design > Fields</strong> y en la columna "Domain" selecciona la lista que acabas de crear.</p>
+                </div>
+            </div>
+            
+            <div class="alert-save mt-6 border-blue-500 bg-blue-50">
+                <p class="text-sm text-blue-800 italic" data-i18n="dominios-save-reminder">Recuerda siempre presionar el botón <strong>Save</strong> en la parte superior después de realizar cambios en los dominios o campos.</p>
+            </div>
+        </div>
+
+        <!-- PARTE 2: ATRIBUTOS (NUEVA PARTE AGREGADA) -->
+        <div class="card">
+            <h3 class="text-xl font-semibold mb-4 text-blue-700" data-i18n="dominios-card2-h3">2. Tabla de Atributos (Información Alfanumérica)</h3>
+            <p class="text-sm text-gray-600 mb-4" data-i18n="dominios-card2-p">Cada elemento dibujado en el mapa (punto, línea o polígono) tiene una fila correspondiente en la base de datos donde se almacena su información.</p>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                <p class="text-sm font-bold text-blue-800 mb-1"><i class="fas fa-table mr-2"></i> <span data-i18n="dominios-open-table-h4">¿Cómo abrir la tabla?</span></p>
+                <p class="text-xs text-blue-700" data-i18n="dominios-open-table-p">Clic derecho sobre la capa en el panel <strong>Contents</strong> > <strong>Attribute Table</strong> (o presiona Ctrl + T).</p>
+            </div>
+
+            <h4 class="font-bold text-gray-700 mb-2 underline" data-i18n="dominios-components-h4">Componentes de la Tabla:</h4>
+            <ul class="space-y-4 text-sm text-gray-700">
+                <li class="flex items-start">
+                    <i class="fas fa-columns mt-1 mr-3 text-blue-500"></i>
+                    <div data-i18n="dominios-fields">
+                        <strong>Campos (Fields):</strong> Son las columnas. Representan categorías como <span class="attribute-tag">TIPO_CABLE</span>, <span class="attribute-tag">ESTADO</span> o <span class="attribute-tag">LONGITUD</span>.
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-grip-lines mt-1 mr-3 text-blue-500"></i>
+                    <div data-i18n="dominios-records">
+                        <strong>Registros (Records):</strong> Son las filas. Cada fila es un objeto real en el mapa.
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-link mt-1 mr-3 text-green-500"></i>
+                    <div data-i18n="dominios-link">
+                        <strong>Vínculo con Dominios:</strong> Si un campo tiene un dominio asignado, al hacer clic en la celda verás una lista desplegable en lugar de poder escribir cualquier texto.
+                    </div>
+                </li>
+            </ul>
+
+            <div class="img-container mt-6">
+                <span class="img-label text-green-600" data-i18n="dominios-img3-label">Vista de la Tabla</span>
+                <img src="Atributos01.png" alt="[Imagen de la Tabla de Atributos]" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="img-placeholder-content" style="display:none">
+                    <i class="fas fa-database text-4xl mb-4 text-green-400"></i>
+                    <p>Referencia visual de Atributos</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALERTA FINAL DE SUMA IMPORTANCIA -->
+            <div class="critical-alert">
+                <i class="fas fa-exclamation-circle text-red-500 text-3xl mr-4"></i>
+                <div>
+                    <h4 class="font-bold text-red-800" data-i18n="dominios-critical-h4">¡AVISO CRÍTICO DE SEGURIDAD DE DATOS!</h4>
+                    <p class="text-sm text-red-700" data-i18n="dominios-critical-p">
+                        Una vez terminado de configurar o asignar los dominios, es <strong>obligatorio</strong> presionar el botón <strong>Save</strong> en la parte superior.
+                        Esta sección es de <strong>suma importancia</strong> para la integridad de la base de datos GIS;
+                        por favor, verifica doblemente los códigos para <strong>evitar equivocaciones</strong> que puedan afectar el análisis posterior.
+                    </p>
+                </div>
+            </div>
+    </section>
+
+    <!-- SECCIÓN KMZ -->
+     <section id="exportar" class="section-content hidden">
+        <div class="flex items-center mb-6 w-full justify-center">
+                <i class="fas fa-file-export text-3xl text-blue-600 mr-4"></i>
+                <p class="text-3xl font-bold text-gray-800" data-i18n="exportar-export-label">Exportar Mapas a PDF/Imagen</p>
+        </div>
+
+        <h1 class="text-3xl font-bold text-gray-800 mb-2" data-i18n="exportar-h1">Paso a Paso: Exportación a KMZ</h1>
+        <p class="text-gray-500 mb-8" data-i18n="exportar-subtitle">Instrucciones detalladas para convertir su proyecto de ArcGIS Pro a formato KML/KMZ.</p>
+        
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-search-location mr-2"></i> <span data-i18n="exportar-div1-header">I. ACCESO A HERRAMIENTAS</span>
+            </div>
+            <p class="text-gray-600 mb-4" data-i18n="exportar-div1-p">
+                Para iniciar la exportación, primero debemos abrir el panel de geoprocesamiento:
+            </p>
+            <div class="space-y-3 mb-6">
+                <div class="flex items-center p-3 bg-gray-50 rounded">
+                    <span class="step-badge">1</span>
+                    <p class="text-sm" data-i18n="exportar-div1-step1">Haga clic en la pestaña superior <strong>Analysis</strong>.</p>
+                </div>
+                <div class="flex items-center p-3 bg-gray-50 rounded">
+                    <span class="step-badge">2</span>
+                    <p class="text-sm" data-i18n="exportar-div1-step2">Seleccione el botón <strong>Tools</strong> para mostrar las herramientas.</p>
+                </div>
+            </div>
+
+            <div class="img-container">
+                <span class="img-label" data-i18n="exportar-div1-img-label">Interfaz: Pestaña Analysis y Herramientas</span>
+                <img src="kmz.png" alt="Herramienta Map to KML seleccionada">               
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-search mr-2"></i> <span data-i18n="exportar-div2-header">II. BUSCAR LA HERRAMIENTA</span>
+            </div>
+            <div class="flex items-center p-3 bg-gray-50 rounded mb-4">
+                <span class="step-badge">3</span>
+                <p class="text-sm" data-i18n="exportar-div2-step3">En el panel de <i>Geoprocessing</i>, escriba <strong>"Map to KML"</strong> en el buscador y elija la herramienta.</p>
+            </div>
+
+            <div class="img-container">
+                <span class="img-label" data-i18n="exportar-div2-img-label">Buscador: Geoprocessing</span>
+                <img src="kmz3.png" alt="Herramienta Map to KML seleccionada"> 
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-edit mr-2"></i> <span data-i18n="exportar-div3-header">III. PARÁMETROS DE SALIDA</span>
+            </div>
+            <ul class="text-sm space-y-4 text-gray-700 ml-4 mb-4">
+                <li class="flex items-start">
+                    <i class="fas fa-map text-blue-500 mt-1 mr-3"></i>
+                    <span data-i18n="exportar-div3-input-map"><strong>Input Map:</strong> Seleccione el mapa actual que desea exportar.</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-file-download text-blue-500 mt-1 mr-3"></i>
+                    <span data-i18n="exportar-div3-output-file"><strong>Output File (KMZ):</strong> Especifique la carpeta de destino y el nombre del archivo.</span>
+                </li>
+            </ul>
+
+            <div class="img-container">
+                <span class="img-label" data-i18n="exportar-div3-img-label">Panel: Configuración Map to KML</span>
+                <img src="kmz4.png" alt="Configuración de rutas de salida">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-play-circle mr-2"></i> <span data-i18n="exportar-div4-header">IV. FINALIZAR PROCESO</span>
+            </div>
+            <div class="flex items-center p-4 bg-green-50 border-l-4 border-green-500 rounded mb-4">
+                <span class="step-badge">4</span>
+                <p class="text-sm font-semibold text-green-800" data-i18n="exportar-div4-step4">Presione <strong>Run</strong> para ejecutar la conversión.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN PAQUETES (MPKX) -->
+    <section id="paquetes" class="section-content hidden">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2" data-i18n="paquetes-h1">Empaquetado de Proyectos</h1>
+        <p class="text-gray-500 mb-8" data-i18n="paquetes-subtitle">Cómo consolidar mapas y datos en un solo archivo para entrega o respaldo.</p>
+        
+        <!-- DIVISIÓN 1: ACCESO -->
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-share-alt mr-2"></i> <span data-i18n="paquetes-div1-header">I. ACCESO A LA HERRAMIENTA</span>
+            </div>
+            <p class="text-gray-600 mb-4" data-i18n="paquetes-div1-p">
+                El archivo <strong>.mpkx (Map Package)</strong> es un contenedor comprimido que incluye las capas, los datos (GDB/Shapefiles) y la simbología. Es la forma segura de compartir proyectos sin romper los vínculos de datos.
+            </p>
+            <div class="flex items-center p-3 bg-gray-50 rounded mb-4">
+                <span class="step-badge">1</span>
+                <p class="text-sm" data-i18n="paquetes-div1-step1">Ve a la pestaña superior <strong>Share</strong> y en el grupo <i>Package</i> haz clic en <strong>Map Package</strong>.</p>
+            </div>
+            
+            <!-- CONTENEDOR IMAGEN 1 -->
+            <div class="img-container">
+                
+                <img src="Map01empaquetado.png" alt="Pestaña Edit en ArcGIS Pro">                
+                <p class="placeholder-text">
+                </p>
+            </div>
+        </div>
+
+        <!-- DIVISIÓN 2: CONFIGURACIÓN -->
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-cog mr-2"></i> <span data-i18n="paquetes-div2-header">II. CONFIGURACIÓN DEL PAQUETE</span>
+            </div>
+            <p class="text-gray-600 mb-4" data-i18n="paquetes-div2-p">
+                En el panel que aparece a la derecha, debes definir dónde se guardará el archivo y completar los metadatos básicos (obligatorios por ArcGIS).
+            </p>
+            <ul class="text-sm space-y-2 text-gray-700 ml-4 mb-4">
+                <li data-i18n="paquetes-div2-li1"><i class="fas fa-check text-blue-500 mr-2"></i> <strong>Package to file:</strong> Selecciona esta opción para guardarlo en tu computadora.</li>
+                <li data-i18n="paquetes-div2-li2"><i class="fas fa-tag text-blue-500 mr-2"></i> <strong>Summary & Tags:</strong> Escribe una breve descripción y etiquetas (ej: "Entrega_Proyecto").</li>
+            </ul>
+
+            <!-- CONTENEDOR IMAGEN 2 -->
+            <div class="img-container">
+                
+                <img src="file01empaquetado.png" alt="Pestaña Edit en ArcGIS Pro"> 
+                <p class="placeholder-text">
+                    
+                </p>
+            </div>
+        </div>
+
+        <!-- DIVISIÓN 3: ANÁLISIS Y ERRORES -->
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-microscope mr-2"></i> <span data-i18n="paquetes-div3-header">III. ANÁLISIS DE CONSISTENCIA</span>
+            </div>
+            <p class="text-gray-600 mb-4" data-i18n="paquetes-div3-p">
+                Antes de generar el paquete, el sistema debe verificar que no falte ninguna fuente de datos.
+            </p>
+            <div class="flex items-center p-3 bg-blue-50 rounded mb-4">
+                <span class="step-badge">2</span>
+                <p class="text-sm" data-i18n="paquetes-div3-step2">Haz clic en el botón <strong>Analyze</strong> en la parte superior del panel.</p>
+            </div>
+            <div class="p-3 bg-gray-100 rounded text-xs text-gray-600 font-mono italic" data-i18n="paquetes-div3-note">
+                Nota: Si aparecen errores rojos, debes corregir las rutas de las capas antes de continuar.
+            </div>
+
+            <!-- CONTENEDOR IMAGEN 3 -->
+            <div class="img-container">
+                
+                 <img src="Analisis01empaquetado.png" alt="Pestaña Edit en ArcGIS Pro">
+                 <p class="placeholder-text">
+                    
+                </p>
+            </div>
+        </div>
+
+        <!-- DIVISIÓN 4: CREACIÓN FINAL -->
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-file-archive mr-2"></i> <span data-i18n="paquetes-div4-header">IV. EMPAQUETADO FINAL</span>
+            </div>
+            <p class="text-gray-600 mb-4" data-i18n="paquetes-div4-p">
+                Una vez que el análisis no devuelva errores, el botón de empaquetado se habilitará.
+            </p>
+            <div class="flex items-center p-3 bg-green-50 border-l-4 border-green-500 rounded mb-4">
+                <span class="step-badge">3</span>
+                <p class="text-sm font-semibold" data-i18n="paquetes-div4-step3">Presiona el botón <strong>Package</strong> para generar el archivo .mpkx.</p>
+            </div>
+
+            <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+                <h5 class="text-yellow-800 font-bold text-sm mb-1"><i class="fas fa-info-circle"></i> <span data-i18n="paquetes-div4-tip-h5">¿Qué obtengo?</span></h5>
+                <p class="text-xs text-yellow-700" data-i18n="paquetes-div4-tip-p">
+                    Obtendrás un único archivo que puedes enviar por correo. Al abrirlo, el destinatario verá exactamente lo mismo que tú, incluyendo los colores de las líneas y los iconos, sin errores de "capas rotas".
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN APPEIT (PDF) -->
+    <section id="appeit" class="section-content hidden">
+        <div class="flex items-center mb-6">
+            <i class="fas fa-file-pdf text-4xl text-red-600 mr-4"></i>
+            <h1 class="text-3xl font-bold text-gray-800" data-i18n="appeit-h1">ArcGIS Pro APPEIT (Reportes PDF)</h1>
+        </div>
+
+        <!-- ¿Qué es? -->
+        <div class="card border-l-8 border-blue-600">
+            <h3 class="text-xl font-bold text-blue-800 mb-4" data-i18n="appeit-intro-h3">¿Qué es esta herramienta?</h3>
+            <p class="text-gray-700 leading-relaxed" data-i18n="appeit-intro-p">
+                <strong>APPEIT</strong> es una herramienta creada por la <strong>NTIA</strong> que funciona dentro de ArcGIS Pro. Su propósito es identificar si tu proyecto de banda ancha cruza zonas protegidas o áreas ambientales antes de la construcción.
+            </p>
+        </div>
+
+        <!-- Descarga e Instalación -->
+        <div class="card">
+            <div class="section-header">
+                <i class="fas fa-download mr-2"></i> <span data-i18n="appeit-install-header">Descarga e Instalación</span>
+            </div>
+            <div class="flex flex-col md:flex-row gap-6 items-center">
+                <div class="flex-1">
+                    <ul class="space-y-4 text-sm text-gray-700">
+                        <li class="flex items-start">
+                            <i class="fas fa-link mt-1 mr-3 text-blue-500"></i>
+                            <span data-i18n="appeit-install-li1">Descarga el archivo <code>.ppkx</code> desde el enlace oficial de la NTIA.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-hdd mt-1 mr-3 text-blue-500"></i>
+                            <span data-i18n="appeit-install-li2">Guárdalo en tu <strong>disco local</strong> (evita OneDrive o Google Drive para mejor rendimiento).</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-tasks mt-1 mr-3 text-blue-500"></i>
+                            <span data-i18n="appeit-install-li3">En ArcGIS Pro, busca el panel <strong>Catalog &gt; Tasks</strong> y haz doble clic en <i>APPEIT User Instructions</i>.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="img-container w-full md:w-1/3 border-blue-200">
+                    <img src="welcome.png" alt="Welcome to APPEIT" class="rounded shadow-sm">
+                    <div class="img-caption" data-i18n="appeit-welcome-caption">Panel de bienvenida de la tarea.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso a Paso -->
+        <div class="card">
+            <h3 class="text-xl font-bold text-gray-800 mb-6" data-i18n="appeit-steps-h3">Uso de la Herramienta Paso a Paso</h3>
+
+            <div class="space-y-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="flex flex-col">
+                        <div class="flex items-center mb-4">
+                            <span class="step-number">1</span>
+                            <h4 class="font-bold text-gray-800" data-i18n="appeit-step12-h4">Carga de Proyecto</h4>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4" data-i18n="appeit-step12-p">Inicia la tarea y selecciona tu archivo (línea de cable o polígono de área). Haz clic en <strong>Run</strong>.</p>
+                        <div class="img-container">
+                            <img src="tasks.png" alt="Tareas APPEIT">
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center mb-4">
+                            <span class="step-number">2</span>
+                            <h4 class="font-bold text-gray-800" data-i18n="appeit-step46-h4">Parámetros e Identidad</h4>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4" data-i18n="appeit-step46-p">Ingresa el <strong>Project ID</strong>. Si es una línea, define el <strong>Buffer</strong>.</p>
+                        <div class="img-container">
+                            <img src="ID.png" alt="ID y Buffer">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="flex flex-col">
+                        <div class="flex items-center mb-4">
+                            <span class="step-number">3</span>
+                            <h4 class="font-bold text-gray-800" data-i18n="appeit-step7-h4">Análisis y Resultados CSV</h4>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4" data-i18n="appeit-step7-p">Ejecuta el análisis. Al finalizar, te mostrará la ruta de guardado del CSV.</p>
+                        <div class="img-container">
+                            <img src="PDF.png" alt="Análisis APPEIT">
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center mb-4">
+                            <span class="step-number">4</span>
+                            <h4 class="font-bold text-gray-800" data-i18n="appeit-step8-h4">Generar Reporte PDF</h4>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4" data-i18n="appeit-step8-p">Selecciona el reporte en "Input Report" y presiona <strong>Run</strong>.</p>
+                        <div class="img-container">
+                            <img src="run.png" alt="Exportar PDF">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ¿Qué contiene el reporte final? -->
+        <div class="card">
+            <h3 class="text-xl font-bold text-blue-800 mb-6 flex items-center">
+                <i class="fas fa-file-lines mr-3"></i> <span data-i18n="appeit-final-report-h3">¿Qué contiene el reporte final?</span>
+            </h3>
+            <p class="text-gray-600 mb-8 text-sm" data-i18n="appeit-final-report-p">
+                El documento PDF resultante es un informe detallado que consolida todos los hallazgos geográficos y ambientales. Se divide principalmente en tres secciones:
+            </p>
+
+            <div class="report-gallery">
+                <!-- Página 1: Portada -->
+                <div class="report-page-card">
+                    <img class="rpc-img" src="reporte.png" alt="Portada del Reporte">
+                    <div class="rpc-body">
+                        <span class="rpc-badge"><i class="fas fa-heading"></i> <span data-i18n="appeit-rep-p1-badge">Página 1</span></span>
+                        <p class="rpc-title" data-i18n="appeit-rep-p1-t">Identificación del Proyecto</p>
+                        <p class="rpc-desc" data-i18n="appeit-rep-p1-d">Contiene el logo de la NTIA, el nombre oficial del reporte, el Nombre e ID del proyecto analizado y las fechas exactas de ejecución y exportación.</p>
+                    </div>
+                </div>
+
+                <!-- Página 2: Resultados -->
+                <div class="report-page-card">
+                    <img class="rpc-img" src="reporte2.png" alt="Tabla de Resultados">
+                    <div class="rpc-body">
+                        <span class="rpc-badge"><i class="fas fa-table"></i> <span data-i18n="appeit-rep-p2-badge">Página 2</span></span>
+                        <p class="rpc-title" data-i18n="appeit-rep-p2-t">Tabla de Hallazgos</p>
+                        <p class="rpc-desc" data-i18n="appeit-rep-p2-d">Muestra el listado de capas afectadas organizadas por categorías (EPA, Infraestructura, Humedales). Detalla el nombre del área y los códigos de Recursos relacionados.</p>
+                    </div>
+                </div>
+
+                <!-- Página 3: BMP Links -->
+                <div class="report-page-card">
+                    <img class="rpc-img" src="reporte3.png" alt="Recursos BMP">
+                    <div class="rpc-body">
+                        <span class="rpc-badge"><i class="fas fa-link"></i> <span data-i18n="appeit-rep-p3-badge">Página 3</span></span>
+                        <p class="rpc-title" data-i18n="appeit-rep-p3-t">Recursos y Mitigación (BMP)</p>
+                        <p class="rpc-desc" data-i18n="appeit-rep-p3-d">Proporciona enlaces directos a las <strong>Mejores Prácticas de Gestión (BMP)</strong> para cada área de recurso afectada (Ej: Recursos Biológicos, Calidad del Aire, Salud Humana).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+</div>
+<script>
+    // =====================================================================
+    // SISTEMA DE IDIOMAS
+    // =====================================================================
+    var currentLang = 'es';
+
+    var TRANSLATIONS = {
+        es: {
+            // Sidebar
+            'sidebar-title': 'Manual ArcGIS Pro',
+            'sidebar-subtitle': 'Guía de Referencia Interna',
+            'nav-inicio': 'Interfaz y Paneles',
+            'nav-crear-capas': 'Creación de Capas',
+            'nav-edicion': 'Dibujo y Edición',
+            'nav-datos': 'Crear Shapefiles',
+            'nav-dominios': 'Dominios y Atributos',
+            'nav-exportar': 'KMZ y Exportación',
+            'nav-paquetes': 'Empaquetado (.mpkx)',
+            'nav-appeit': 'APPEIT (PDF)',
+            // Section: appeit
+            'appeit-h1': 'ArcGIS Pro APPEIT (Reportes PDF)',
+            'appeit-intro-h3': '¿Qué es esta herramienta?',
+            'appeit-intro-p': '<strong>APPEIT</strong> es una herramienta creada por la <strong>NTIA</strong> que funciona dentro de ArcGIS Pro. Su propósito es identificar si tu proyecto de banda ancha cruza zonas protegidas o áreas ambientales antes de la construcción.',
+            'appeit-install-header': 'Descarga e Instalación',
+            'appeit-install-li1': 'Descarga el archivo <code>.ppkx</code> desde el enlace oficial de la NTIA.',
+            'appeit-install-li2': 'Guárdalo en tu <strong>disco local</strong> (evita OneDrive o Google Drive para mejor rendimiento).',
+            'appeit-install-li3': 'En ArcGIS Pro, busca el panel <strong>Catalog &gt; Tasks</strong> y haz doble clic en <i>APPEIT User Instructions</i>.',
+            'appeit-welcome-caption': 'Panel de bienvenida de la tarea.',
+            'appeit-steps-h3': 'Uso de la Herramienta Paso a Paso',
+            'appeit-step12-h4': 'Carga de Proyecto',
+            'appeit-step12-p': 'Inicia la tarea y selecciona tu archivo (línea de cable o polígono de área). Haz clic en <strong>Run</strong>.',
+            'appeit-step46-h4': 'Parámetros e Identidad',
+            'appeit-step46-p': 'Ingresa el <strong>Project ID</strong>. Si es una línea, define el <strong>Buffer</strong>.',
+            'appeit-step7-h4': 'Análisis y Resultados CSV',
+            'appeit-step7-p': 'Ejecuta el análisis. Al finalizar, te mostrará la ruta de guardado del CSV.',
+            'appeit-step8-h4': 'Generar Reporte PDF',
+            'appeit-step8-p': 'Selecciona el reporte en "Input Report" y presiona <strong>Run</strong>.',
+            'appeit-final-report-h3': '¿Qué contiene el reporte final?',
+            'appeit-final-report-p': 'El documento PDF resultante es un informe detallado que consolida todos los hallazgos geográficos y ambientales. Se divide principalmente en tres secciones:',
+            'appeit-rep-p1-badge': 'Página 1',
+            'appeit-rep-p1-t': 'Identificación del Proyecto',
+            'appeit-rep-p1-d': 'Contiene el logo de la NTIA, el nombre oficial del reporte, el Nombre e ID del proyecto analizado y las fechas exactas de ejecución y exportación.',
+            'appeit-rep-p2-badge': 'Página 2',
+            'appeit-rep-p2-t': 'Tabla de Hallazgos',
+            'appeit-rep-p2-d': 'Muestra el listado de capas afectadas organizadas por categorías (EPA, Infraestructura, Humedales). Detalla el nombre del área y los códigos de Recursos relacionados.',
+            'appeit-rep-p3-badge': 'Página 3',
+            'appeit-rep-p3-t': 'Recursos y Mitigación (BMP)',
+            'appeit-rep-p3-d': 'Proporciona enlaces directos a las <strong>Mejores Prácticas de Gestión (BMP)</strong> para cada área de recurso afectada (Ej: Recursos Biológicos, Calidad del Aire, Salud Humana).',
+            // Section: inicio
+            'inicio-h1': 'Interfaz y Paneles Principales',
+            'inicio-explorer-title': 'Explorador Interactivo',
+            'inicio-explorer-hint': 'Haz clic en las zonas de la imagen',
+            // Section: crear-capas
+            'crear-capas-h1': 'Creación Detallada de Capas (Feature Classes)',
+            'crear-capas-alert-h4': 'Diferencia Importante',
+            'crear-capas-alert-p': 'Las capas no se crean desde el panel de <strong>Contents</strong>. Para crear una capa nueva, debes usar el panel de <strong>Catalog</strong> (a la derecha).',
+            'crear-capas-card-h3': 'Proceso Paso a Paso',
+            'crear-capas-step1-h4': 'Acceso a la Geodatabase',
+            'crear-capas-step1-p': 'En el panel <strong>Catalog</strong>, expande <strong>Databases</strong>, haz clic derecho en tu .gdb y selecciona <code class="tool-badge">New</code> > <code class="tool-badge">Feature Class</code>.',
+            'crear-capas-step1-caption': 'Menú contextual para crear una nueva clase de entidad.',
+            'crear-capas-step2-h4': 'Definición de Identidad',
+            'crear-capas-step2-p': 'Establece el <strong>Name</strong> (sin espacios) y el <strong>Alias</strong>. Selecciona el tipo de geometría (Punto, Línea o Polígono).',
+            'crear-capas-step2-caption': 'Configuración inicial del asistente.',
+            'crear-capas-step3-h4': 'Configuración de Campos (Fields)',
+            'crear-capas-step3-p': 'Define las columnas de tu base de datos. Agrega campos como "Estado", "Material" o "Fecha".',
+            'crear-capas-step3-caption': 'Definición de nombres de campo y tipos de datos.',
+            'crear-capas-step4-h4': 'Sistema de Coordenadas',
+            'crear-capas-step4-p': 'Busca y selecciona el sistema de coordenadas oficial para garantizar la precisión geográfica.',
+            'crear-capas-step4-caption': 'Selección del Sistema de Referencia Espacial.',
+            // Section: edicion
+            'edicion-h1': 'Dibujo y Edición de Capas',
+            'edicion-subtitle': 'Flujo de trabajo estándar para la creación de elementos geográficos.',
+            'edicion-div1-header': 'I. INICIO DE LA EDICIÓN',
+            'edicion-div1-p': 'Para comenzar a dibujar, primero debemos localizar las herramientas en la cinta superior. A diferencia de otros softwares, aquí la edición está integrada en el flujo constante.',
+            'edicion-div1-step1': 'Dirígete a la pestaña <strong>Edit</strong> y busca el grupo <strong>Features</strong>.',
+            'edicion-div2-header': 'II. SELECCIÓN DE PLANTILLAS (TEMPLATES)',
+            'edicion-div2-p': 'Al presionar el botón <strong>Create</strong>, aparecerá un panel a la derecha. Este panel muestra todas las capas editables de tu mapa.',
+            'edicion-div2-step2': 'Selecciona la capa en la que deseas trabajar para ver sus herramientas de dibujo.',
+            'edicion-div3-header': 'III. HERRAMIENTAS DE CONSTRUCCIÓN',
+            'edicion-div3-p': 'Una vez seleccionada la capa, aparecerá una barra flotante en el mapa o debajo del panel de creación con métodos de dibujo específicos.',
+            'edicion-div3-methods-h5': 'Métodos Comunes:',
+            'edicion-div3-methods': '<li>• <strong>Line:</strong> Clic por cada vértice.</li><li>• <strong>Streaming:</strong> Dibuja mientras mueves el mouse.</li><li>• <strong>Rectangle/Circle:</strong> Formas geométricas exactas.</li>',
+            'edicion-div3-protip': '<strong>Atajo Pro:</strong> Presiona la tecla <strong>F2</strong> para terminar un dibujo (Finish Sketch) sin necesidad de hacer doble clic.',
+            'edicion-div4-header': 'IV. AJUSTE (SNAPPING) Y FINALIZACIÓN',
+            'edicion-div4-p': 'Para asegurar la conectividad entre cables y postes, el <strong>Snapping</strong> debe estar activo. Esto hace que el puntero se "pegue" a los elementos existentes.',
+            'edicion-div4-save-h4': 'CIERRE CRÍTICO',
+            'edicion-div4-save-p': 'Al terminar de dibujar, es <strong>obligatorio</strong> presionar el botón <strong>Save</strong> del grupo <i>Manage Edits</i>. Si guardas el proyecto (.aprx) pero no guardas la edición de las capas, los dibujos se perderán.',
+            // Section: datos
+            'datos-h1': 'Crear Shapefiles',
+            'datos-subtitle': 'Aprende a usar la herramienta para convertir tu base de datos en archivos Shape (.shp).',
+            'datos-reset-btn': 'Reiniciar',
+            'datos-map-view': 'Vista de Mapa Activa',
+            'datos-search-placeholder': 'Busca herramientas aquí...',
+            'datos-tool-name': 'Crear Shapefiles',
+            'datos-tool-category': 'Conversion Tools',
+            'datos-select-layers': 'Selecciona las capas...',
+            'datos-exporting': 'Exportando capas...',
+            'datos-success': '¡Éxito!',
+            'datos-output-section-h3': 'Estructura de Salida (.shp)',
+            'datos-output-desc': 'Al finalizar el proceso, un "Shapefile" se compone de varias extensiones que deben permanecer juntas:',
+            'datos-shp-desc': 'Geometría de los datos.',
+            'datos-dbf-desc': 'Tabla de atributos.',
+            'datos-shx-desc': 'Índice de la geometría.',
+            'datos-prj-desc': 'Sistema de Coordenadas.',
+            'datos-zip-tip': '<i class="fas fa-info-circle mr-2"></i> Pro-tip: Comprime todos estos archivos en un único archivo .ZIP para compartirlos.',
+            // Section: dominios
+            'dominios-h1': 'Dominios y Atributos',
+            'dominios-card1-h3': 'Control de Calidad de Datos',
+            'dominios-card1-p': 'Los dominios evitan errores de escritura manual, forzando al usuario a seleccionar valores de una lista predefinida por la empresa.',
+            'dominios-quick-route-h4': 'Ruta de acceso rápido:',
+            'dominios-quick-route-p': 'Para configurar o ver los dominios asociados a una capa específica:',
+            'dominios-img1-label': 'Referencia: Clic Derecho en Capa',
+            'dominios-img2-label': 'Paso 2: Configuración de la Tabla',
+            'dominios-config-h3': '1. Configuración',
+            'dominios-config-p': 'Crea el nombre del dominio y define los códigos (valor real) y descripciones (lo que ve el usuario).',
+            'dominios-assign-h3': '2. Asignación',
+            'dominios-assign-p': 'Ve a <strong>Data Design > Fields</strong> y en la columna "Domain" selecciona la lista que acabas de crear.',
+            'dominios-save-reminder': 'Recuerda siempre presionar el botón <strong>Save</strong> en la parte superior después de realizar cambios en los dominios o campos.',
+            'dominios-card2-h3': '2. Tabla de Atributos (Información Alfanumérica)',
+            'dominios-card2-p': 'Cada elemento dibujado en el mapa (punto, línea o polígono) tiene una fila correspondiente en la base de datos donde se almacena su información.',
+            'dominios-open-table-h4': '¿Cómo abrir la tabla?',
+            'dominios-open-table-p': 'Clic derecho sobre la capa en el panel <strong>Contents</strong> > <strong>Attribute Table</strong> (o presiona Ctrl + T).',
+            'dominios-components-h4': 'Componentes de la Tabla:',
+            'dominios-fields': '<strong>Campos (Fields):</strong> Son las columnas. Representan categorías como <span class="attribute-tag">TIPO_CABLE</span>, <span class="attribute-tag">ESTADO</span> o <span class="attribute-tag">LONGITUD</span>.',
+            'dominios-records': '<strong>Registros (Records):</strong> Son las filas. Cada fila es un objeto real en el mapa.',
+            'dominios-link': '<strong>Vínculo con Dominios:</strong> Si un campo tiene un dominio asignado, al hacer clic en la celda verás una lista desplegable en lugar de poder escribir cualquier texto.',
+            'dominios-img3-label': 'Vista de la Tabla',
+            'dominios-critical-h4': '¡AVISO CRÍTICO DE SEGURIDAD DE DATOS!',
+            'dominios-critical-p': 'Una vez terminado de configurar o asignar los dominios, es <strong>obligatorio</strong> presionar el botón <strong>Save</strong> en la parte superior. Esta sección es de <strong>suma importancia</strong> para la integridad de la base de datos GIS; por favor, verifica doblemente los códigos para <strong>evitar equivocaciones</strong> que puedan afectar el análisis posterior.',
+            // Section: exportar
+            'exportar-export-label': 'Exportar Mapas a PDF/Imagen',
+            'exportar-h1': 'Paso a Paso: Exportación a KMZ',
+            'exportar-subtitle': 'Instrucciones detalladas para convertir su proyecto de ArcGIS Pro a formato KML/KMZ.',
+            'exportar-div1-header': 'I. ACCESO A HERRAMIENTAS',
+            'exportar-div1-p': 'Para iniciar la exportación, primero debemos abrir el panel de geoprocesamiento:',
+            'exportar-div1-step1': 'Haga clic en la pestaña superior <strong>Analysis</strong>.',
+            'exportar-div1-step2': 'Seleccione el botón <strong>Tools</strong> para mostrar las herramientas.',
+            'exportar-div1-img-label': 'Interfaz: Pestaña Analysis y Herramientas',
+            'exportar-div2-header': 'II. BUSCAR LA HERRAMIENTA',
+            'exportar-div2-step3': 'En el panel de <i>Geoprocessing</i>, escriba <strong>"Map to KML"</strong> en el buscador y elija la herramienta.',
+            'exportar-div2-img-label': 'Buscador: Geoprocessing',
+            'exportar-div3-header': 'III. PARÁMETROS DE SALIDA',
+            'exportar-div3-input-map': '<strong>Input Map:</strong> Seleccione el mapa actual que desea exportar.',
+            'exportar-div3-output-file': '<strong>Output File (KMZ):</strong> Especifique la carpeta de destino y el nombre del archivo.',
+            'exportar-div3-img-label': 'Panel: Configuración Map to KML',
+            'exportar-div4-header': 'IV. FINALIZAR PROCESO',
+            'exportar-div4-step4': 'Presione <strong>Run</strong> para ejecutar la conversión.',
+            // Section: paquetes
+            'paquetes-h1': 'Empaquetado de Proyectos',
+            'paquetes-subtitle': 'Cómo consolidar mapas y datos en un solo archivo para entrega o respaldo.',
+            'paquetes-div1-header': 'I. ACCESO A LA HERRAMIENTA',
+            'paquetes-div1-p': 'El archivo <strong>.mpkx (Map Package)</strong> es un contenedor comprimido que incluye las capas, los datos (GDB/Shapefiles) y la simbología. Es la forma segura de compartir proyectos sin romper los vínculos de datos.',
+            'paquetes-div1-step1': 'Ve a la pestaña superior <strong>Share</strong> y en el grupo <i>Package</i> haz clic en <strong>Map Package</strong>.',
+            'paquetes-div2-header': 'II. CONFIGURACIÓN DEL PAQUETE',
+            'paquetes-div2-p': 'En el panel que aparece a la derecha, debes definir dónde se guardará el archivo y completar los metadatos básicos (obligatorios por ArcGIS).',
+            'paquetes-div2-li1': '<i class="fas fa-check text-blue-500 mr-2"></i> <strong>Package to file:</strong> Selecciona esta opción para guardarlo en tu computadora.',
+            'paquetes-div2-li2': '<i class="fas fa-tag text-blue-500 mr-2"></i> <strong>Summary & Tags:</strong> Escribe una breve descripción y etiquetas (ej: "Entrega_Proyecto").',
+            'paquetes-div3-header': 'III. ANÁLISIS DE CONSISTENCIA',
+            'paquetes-div3-p': 'Antes de generar el paquete, el sistema debe verificar que no falte ninguna fuente de datos.',
+            'paquetes-div3-step2': 'Haz clic en el botón <strong>Analyze</strong> en la parte superior del panel.',
+            'paquetes-div3-note': 'Nota: Si aparecen errores rojos, debes corregir las rutas de las capas antes de continuar.',
+            'paquetes-div4-header': 'IV. EMPAQUETADO FINAL',
+            'paquetes-div4-p': 'Una vez que el análisis no devuelva errores, el botón de empaquetado se habilitará.',
+            'paquetes-div4-step3': 'Presiona el botón <strong>Package</strong> para generar el archivo .mpkx.',
+            'paquetes-div4-tip-h5': '¿Qué obtengo?',
+            'paquetes-div4-tip-p': 'Obtendrás un único archivo que puedes enviar por correo. Al abrirlo, el destinatario verá exactamente lo mismo que tú, incluyendo los colores de las líneas y los iconos, sin errores de "capas rotas".',
+            // Nav buttons
+            'nav-prev': 'Anterior',
+            'nav-next': 'Siguiente',
+            // Hotspots
+            'hs-ribbon-t': 'Cinta de Opciones (Ribbon)',
+            'hs-ribbon-c': "<div><p class='font-bold mb-2 text-blue-400'>Herramientas de Control</p><ul class='list-disc ml-4 space-y-1'><li><b>Map:</b> Exploración básica.</li><li><b>Add Data:</b> Icono \"+\" amarillo para cargar capas.</li><li><b>Edit:</b> Imprescindible para dibujo y Snapping.</li></ul></div><div><p class='font-bold mb-2 text-blue-400'>Buscador</p><p>Usa <b>Command Search</b> para hallar cualquier herramienta.</p></div>",
+            'hs-contents-t': 'Panel de Contenidos (Contents)',
+            'hs-contents-c': "<div><p>Gestión de capas, simbología y visibilidad. Haz clic derecho en los símbolos para cambios rápidos.</p></div>",
+            'hs-map-t': 'Vista del Mapa',
+            'hs-map-c': "<div><p class='font-bold mb-2'>Navegación</p><p>Lienzo principal. Truco: Mantén <kbd>C</kbd> para moverte (Pan) sin soltar tu herramienta de dibujo.</p></div>",
+            'hs-attr-t': 'Panel de Atributos (Attributes)',
+            'hs-attr-c': "<div><p>Visualiza y edita datos alfanuméricos. El <b>OBJECTID</b> es el identificador único.</p></div>",
+            // Simulator steps
+            'sim-step1': '<i class="fas fa-search mr-2"></i> <b>PASO 1:</b> En el panel de Geoprocessing, escribe rápido <b>"geodata"</b> para buscar la herramienta.',
+            'sim-step2': '<i class="fas fa-hand-pointer mr-2"></i> <b>PASO 2:</b> Selecciona el resultado <b>Geodatabase To Shape</b> para abrir sus parámetros.',
+            'sim-step3': '<i class="fas fa-layer-group mr-2"></i> <b>PASO 3:</b> En <b>Input Features</b>, selecciona las capas (ej: <b>Fiber Cable</b>).',
+            'sim-step4': '<div><i class="fas fa-rocket mr-2"></i> <b>PASO 4:</b> Haz clic en <b>Run</b>. <div class="warning-step"><i class="fas fa-exclamation-triangle"></i> ¡AVISO! Asegúrate de haber seleccionado o creado la carpeta de destino correcta antes de ejecutar.</div></div>',
+            'sim-done': '<i class="fas fa-check-double mr-2"></i> <b>PROCESO FINALIZADO.</b>'
+        },
+        en: {
+            // Sidebar
+            'sidebar-title': 'ArcGIS Pro Manual',
+            'sidebar-subtitle': 'Internal Reference Guide',
+            'nav-inicio': 'Interface & Panels',
+            'nav-crear-capas': 'Layer Creation',
+            'nav-edicion': 'Drawing & Editing',
+            'nav-datos': 'Create Shapefiles',
+            'nav-dominios': 'Domains & Attributes',
+            'nav-exportar': 'KMZ & Export',
+            'nav-paquetes': 'Packaging (.mpkx)',
+            'nav-appeit': 'APPEIT (PDF)',
+            // Section: appeit
+            'appeit-h1': 'ArcGIS Pro APPEIT (PDF Reports)',
+            'appeit-intro-h3': 'What is this tool?',
+            'appeit-intro-p': '<strong>APPEIT</strong> is a tool created by the <strong>NTIA</strong> that runs inside ArcGIS Pro. Its purpose is to identify whether your broadband project crosses protected zones or environmental areas before construction.',
+            'appeit-install-header': 'Download & Installation',
+            'appeit-install-li1': 'Download the <code>.ppkx</code> file from the official NTIA link.',
+            'appeit-install-li2': 'Save it on your <strong>local drive</strong> (avoid OneDrive or Google Drive for better performance).',
+            'appeit-install-li3': 'In ArcGIS Pro, open the <strong>Catalog &gt; Tasks</strong> panel and double-click <i>APPEIT User Instructions</i>.',
+            'appeit-welcome-caption': 'Task welcome panel.',
+            'appeit-steps-h3': 'Step-by-Step Tool Usage',
+            'appeit-step12-h4': 'Project Load',
+            'appeit-step12-p': 'Start the task and select your file (cable line or area polygon). Click <strong>Run</strong>.',
+            'appeit-step46-h4': 'Parameters & Identity',
+            'appeit-step46-p': 'Enter the <strong>Project ID</strong>. If it is a line, define the <strong>Buffer</strong>.',
+            'appeit-step7-h4': 'Analysis & CSV Results',
+            'appeit-step7-p': 'Run the analysis. When finished, it will show you the CSV save path.',
+            'appeit-step8-h4': 'Generate PDF Report',
+            'appeit-step8-p': 'Select the report under "Input Report" and press <strong>Run</strong>.',
+            'appeit-final-report-h3': 'What does the final report contain?',
+            'appeit-final-report-p': 'The resulting PDF is a detailed report consolidating all geographic and environmental findings. It is mainly divided into three sections:',
+            'appeit-rep-p1-badge': 'Page 1',
+            'appeit-rep-p1-t': 'Project Identification',
+            'appeit-rep-p1-d': 'Contains the NTIA logo, the official report name, the project Name and ID, and the exact execution and export dates.',
+            'appeit-rep-p2-badge': 'Page 2',
+            'appeit-rep-p2-t': 'Findings Table',
+            'appeit-rep-p2-d': 'Shows the list of affected layers organized by categories (EPA, Infrastructure, Wetlands). Details the area name and related Resource codes.',
+            'appeit-rep-p3-badge': 'Page 3',
+            'appeit-rep-p3-t': 'Resources & Mitigation (BMP)',
+            'appeit-rep-p3-d': 'Provides direct links to the <strong>Best Management Practices (BMP)</strong> for each affected resource area (e.g., Biological Resources, Air Quality, Human Health).',
+            // Section: inicio
+            'inicio-h1': 'Interface and Main Panels',
+            'inicio-explorer-title': 'Interactive Explorer',
+            'inicio-explorer-hint': 'Click on the image zones',
+            // Section: crear-capas
+            'crear-capas-h1': 'Detailed Layer Creation (Feature Classes)',
+            'crear-capas-alert-h4': 'Important Difference',
+            'crear-capas-alert-p': 'Layers are not created from the <strong>Contents</strong> panel. To create a new layer, you must use the <strong>Catalog</strong> panel (on the right).',
+            'crear-capas-card-h3': 'Step-by-Step Process',
+            'crear-capas-step1-h4': 'Geodatabase Access',
+            'crear-capas-step1-p': 'In the <strong>Catalog</strong> panel, expand <strong>Databases</strong>, right-click your .gdb and select <code class="tool-badge">New</code> > <code class="tool-badge">Feature Class</code>.',
+            'crear-capas-step1-caption': 'Context menu to create a new feature class.',
+            'crear-capas-step2-h4': 'Identity Definition',
+            'crear-capas-step2-p': 'Set the <strong>Name</strong> (no spaces) and the <strong>Alias</strong>. Select the geometry type (Point, Line or Polygon).',
+            'crear-capas-step2-caption': 'Initial wizard configuration.',
+            'crear-capas-step3-h4': 'Field Configuration',
+            'crear-capas-step3-p': 'Define your database columns. Add fields like "Status", "Material" or "Date".',
+            'crear-capas-step3-caption': 'Field name and data type definitions.',
+            'crear-capas-step4-h4': 'Coordinate System',
+            'crear-capas-step4-p': 'Search and select the official coordinate system to ensure geographic accuracy.',
+            'crear-capas-step4-caption': 'Spatial Reference System selection.',
+            // Section: edicion
+            'edicion-h1': 'Drawing and Editing Layers',
+            'edicion-subtitle': 'Standard workflow for creating geographic features.',
+            'edicion-div1-header': 'I. STARTING EDIT MODE',
+            'edicion-div1-p': 'To start drawing, first locate the tools on the top ribbon. Unlike other software, editing is integrated into the constant workflow here.',
+            'edicion-div1-step1': 'Go to the <strong>Edit</strong> tab and find the <strong>Features</strong> group.',
+            'edicion-div2-header': 'II. TEMPLATE SELECTION',
+            'edicion-div2-p': 'When you press the <strong>Create</strong> button, a panel will appear on the right. This panel shows all editable layers in your map.',
+            'edicion-div2-step2': 'Select the layer you want to work on to see its drawing tools.',
+            'edicion-div3-header': 'III. CONSTRUCTION TOOLS',
+            'edicion-div3-p': 'Once the layer is selected, a floating toolbar will appear on the map or below the creation panel with specific drawing methods.',
+            'edicion-div3-methods-h5': 'Common Methods:',
+            'edicion-div3-methods': '<li>• <strong>Line:</strong> Click for each vertex.</li><li>• <strong>Streaming:</strong> Draw as you move the mouse.</li><li>• <strong>Rectangle/Circle:</strong> Exact geometric shapes.</li>',
+            'edicion-div3-protip': '<strong>Pro Shortcut:</strong> Press <strong>F2</strong> to finish a drawing (Finish Sketch) without double-clicking.',
+            'edicion-div4-header': 'IV. SNAPPING & FINALIZATION',
+            'edicion-div4-p': 'To ensure connectivity between cables and poles, <strong>Snapping</strong> must be active. This makes the cursor "snap" to existing elements.',
+            'edicion-div4-save-h4': 'CRITICAL SAVE',
+            'edicion-div4-save-p': 'When finished drawing, it is <strong>mandatory</strong> to press the <strong>Save</strong> button in the <i>Manage Edits</i> group. If you save the project (.aprx) but not the layer edits, the drawings will be lost.',
+            // Section: datos
+            'datos-h1': 'Create Shapefiles',
+            'datos-subtitle': 'Learn how to use the tool to convert your database into Shape files (.shp).',
+            'datos-reset-btn': 'Reset',
+            'datos-map-view': 'Active Map View',
+            'datos-search-placeholder': 'Search tools here...',
+            'datos-tool-name': 'Create Shapefiles',
+            'datos-tool-category': 'Conversion Tools',
+            'datos-select-layers': 'Select layers...',
+            'datos-exporting': 'Exporting layers...',
+            'datos-success': 'Success!',
+            'datos-output-section-h3': 'Output Structure (.shp)',
+            'datos-output-desc': 'When the process is complete, a Shapefile consists of several extensions that must stay together:',
+            'datos-shp-desc': 'Geometry of the data.',
+            'datos-dbf-desc': 'Attribute table.',
+            'datos-shx-desc': 'Geometry index.',
+            'datos-prj-desc': 'Coordinate System.',
+            'datos-zip-tip': '<i class="fas fa-info-circle mr-2"></i> Pro-tip: Compress all these files into a single .ZIP file to share them.',
+            // Section: dominios
+            'dominios-h1': 'Domains and Attributes',
+            'dominios-card1-h3': 'Data Quality Control',
+            'dominios-card1-p': 'Domains prevent manual typing errors by forcing users to select values from a predefined company list.',
+            'dominios-quick-route-h4': 'Quick access route:',
+            'dominios-quick-route-p': 'To configure or view the domains associated with a specific layer:',
+            'dominios-img1-label': 'Reference: Right-click on Layer',
+            'dominios-img2-label': 'Step 2: Table Configuration',
+            'dominios-config-h3': '1. Configuration',
+            'dominios-config-p': 'Create the domain name and define the codes (actual value) and descriptions (what the user sees).',
+            'dominios-assign-h3': '2. Assignment',
+            'dominios-assign-p': 'Go to <strong>Data Design > Fields</strong> and in the "Domain" column select the list you just created.',
+            'dominios-save-reminder': 'Always remember to press the <strong>Save</strong> button at the top after making changes to domains or fields.',
+            'dominios-card2-h3': '2. Attribute Table (Alphanumeric Information)',
+            'dominios-card2-p': 'Each element drawn on the map (point, line or polygon) has a corresponding row in the database where its information is stored.',
+            'dominios-open-table-h4': 'How to open the table?',
+            'dominios-open-table-p': 'Right-click on the layer in the <strong>Contents</strong> panel > <strong>Attribute Table</strong> (or press Ctrl + T).',
+            'dominios-components-h4': 'Table Components:',
+            'dominios-fields': '<strong>Fields:</strong> These are the columns. They represent categories like <span class="attribute-tag">CABLE_TYPE</span>, <span class="attribute-tag">STATUS</span> or <span class="attribute-tag">LENGTH</span>.',
+            'dominios-records': '<strong>Records:</strong> These are the rows. Each row is a real object on the map.',
+            'dominios-link': '<strong>Domain Link:</strong> If a field has a domain assigned, clicking on the cell will show a dropdown list instead of allowing free text input.',
+            'dominios-img3-label': 'Table View',
+            'dominios-critical-h4': 'CRITICAL DATA SECURITY WARNING!',
+            'dominios-critical-p': 'Once you have finished configuring or assigning domains, it is <strong>mandatory</strong> to press the <strong>Save</strong> button at the top. This section is of <strong>utmost importance</strong> for GIS database integrity; please double-check the codes to <strong>avoid mistakes</strong> that could affect subsequent analysis.',
+            // Section: exportar
+            'exportar-export-label': 'Export Maps to PDF/Image',
+            'exportar-h1': 'Step by Step: KMZ Export',
+            'exportar-subtitle': 'Detailed instructions for converting your ArcGIS Pro project to KML/KMZ format.',
+            'exportar-div1-header': 'I. ACCESSING TOOLS',
+            'exportar-div1-p': 'To start the export, we must first open the geoprocessing panel:',
+            'exportar-div1-step1': 'Click on the top tab <strong>Analysis</strong>.',
+            'exportar-div1-step2': 'Select the <strong>Tools</strong> button to display the tools.',
+            'exportar-div1-img-label': 'Interface: Analysis Tab and Tools',
+            'exportar-div2-header': 'II. FIND THE TOOL',
+            'exportar-div2-step3': 'In the <i>Geoprocessing</i> panel, type <strong>"Map to KML"</strong> in the search bar and choose the tool.',
+            'exportar-div2-img-label': 'Search: Geoprocessing',
+            'exportar-div3-header': 'III. OUTPUT PARAMETERS',
+            'exportar-div3-input-map': '<strong>Input Map:</strong> Select the current map you want to export.',
+            'exportar-div3-output-file': '<strong>Output File (KMZ):</strong> Specify the destination folder and file name.',
+            'exportar-div3-img-label': 'Panel: Map to KML Configuration',
+            'exportar-div4-header': 'IV. FINALIZE PROCESS',
+            'exportar-div4-step4': 'Press <strong>Run</strong> to execute the conversion.',
+            // Section: paquetes
+            'paquetes-h1': 'Project Packaging',
+            'paquetes-subtitle': 'How to consolidate maps and data into a single file for delivery or backup.',
+            'paquetes-div1-header': 'I. ACCESSING THE TOOL',
+            'paquetes-div1-p': 'The <strong>.mpkx (Map Package)</strong> file is a compressed container that includes the layers, data (GDB/Shapefiles) and symbology. It is the safe way to share projects without breaking data links.',
+            'paquetes-div1-step1': 'Go to the top tab <strong>Share</strong> and in the <i>Package</i> group click on <strong>Map Package</strong>.',
+            'paquetes-div2-header': 'II. PACKAGE CONFIGURATION',
+            'paquetes-div2-p': 'In the panel that appears on the right, define where the file will be saved and complete the basic metadata (required by ArcGIS).',
+            'paquetes-div2-li1': '<i class="fas fa-check text-blue-500 mr-2"></i> <strong>Package to file:</strong> Select this option to save it on your computer.',
+            'paquetes-div2-li2': '<i class="fas fa-tag text-blue-500 mr-2"></i> <strong>Summary & Tags:</strong> Write a brief description and tags (e.g. "Project_Delivery").',
+            'paquetes-div3-header': 'III. CONSISTENCY ANALYSIS',
+            'paquetes-div3-p': 'Before generating the package, the system must verify that no data source is missing.',
+            'paquetes-div3-step2': 'Click the <strong>Analyze</strong> button at the top of the panel.',
+            'paquetes-div3-note': 'Note: If red errors appear, you must fix the layer paths before continuing.',
+            'paquetes-div4-header': 'IV. FINAL PACKAGING',
+            'paquetes-div4-p': 'Once the analysis returns no errors, the packaging button will be enabled.',
+            'paquetes-div4-step3': 'Press the <strong>Package</strong> button to generate the .mpkx file.',
+            'paquetes-div4-tip-h5': 'What do I get?',
+            'paquetes-div4-tip-p': 'You will get a single file you can send by email. When opened, the recipient will see exactly what you see, including line colors and icons, with no "broken layer" errors.',
+            // Nav buttons
+            'nav-prev': 'Previous',
+            'nav-next': 'Next',
+            // Hotspots
+            'hs-ribbon-t': 'Options Ribbon',
+            'hs-ribbon-c': "<div><p class='font-bold mb-2 text-blue-400'>Control Tools</p><ul class='list-disc ml-4 space-y-1'><li><b>Map:</b> Basic exploration.</li><li><b>Add Data:</b> Yellow \"+\" icon to load layers.</li><li><b>Edit:</b> Essential for drawing and Snapping.</li></ul></div><div><p class='font-bold mb-2 text-blue-400'>Search Bar</p><p>Use <b>Command Search</b> to find any tool.</p></div>",
+            'hs-contents-t': 'Contents Panel',
+            'hs-contents-c': "<div><p>Layer management, symbology and visibility. Right-click on symbols for quick changes.</p></div>",
+            'hs-map-t': 'Map View',
+            'hs-map-c': "<div><p class='font-bold mb-2'>Navigation</p><p>Main canvas. Tip: Hold <kbd>C</kbd> to Pan without releasing your drawing tool.</p></div>",
+            'hs-attr-t': 'Attributes Panel',
+            'hs-attr-c': "<div><p>View and edit alphanumeric data. <b>OBJECTID</b> is the unique identifier.</p></div>",
+            // Simulator steps
+            'sim-step1': '<i class="fas fa-search mr-2"></i> <b>STEP 1:</b> In the Geoprocessing panel, quickly type <b>"geodata"</b> to search for the tool.',
+            'sim-step2': '<i class="fas fa-hand-pointer mr-2"></i> <b>STEP 2:</b> Select the <b>Geodatabase To Shape</b> result to open its parameters.',
+            'sim-step3': '<i class="fas fa-layer-group mr-2"></i> <b>STEP 3:</b> In <b>Input Features</b>, select the layers (e.g.: <b>Fiber Cable</b>).',
+            'sim-step4': '<div><i class="fas fa-rocket mr-2"></i> <b>STEP 4:</b> Click <b>Run</b>. <div class="warning-step"><i class="fas fa-exclamation-triangle"></i> WARNING! Make sure you have selected or created the correct destination folder before running.</div></div>',
+            'sim-done': '<i class="fas fa-check-double mr-2"></i> <b>PROCESS COMPLETE.</b>'
+        }
+    };
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        var t = TRANSLATIONS[lang];
+        // Update all data-i18n elements
+        document.querySelectorAll('[data-i18n]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n');
+            if (t[key] !== undefined) el.innerHTML = t[key];
+        });
+        // Update page title and html lang
+        document.title = lang === 'es' ? 'Manual de Referencia ArcGIS Pro - Empresa' : 'ArcGIS Pro Reference Manual - Company';
+        document.documentElement.lang = lang;
+        // Update lang button text
+        var btn = document.getElementById('lang-btn');
+        if (btn) btn.textContent = lang === 'es' ? '🌐 EN' : '🌐 ES';
+        // Update search input placeholder
+        var searchInput = document.getElementById('tool-search');
+        if (searchInput) searchInput.placeholder = t['datos-search-placeholder'];
+        // Update layer select first option
+        var layerSelect = document.getElementById('layer-select');
+        if (layerSelect && layerSelect.options[0]) layerSelect.options[0].text = t['datos-select-layers'];
+        // Update simulator instruction if at step 1
+        var searchView = document.getElementById('search-view');
+        var instructionText = document.getElementById('instruction-text');
+        if (instructionText && searchView && !searchView.classList.contains('hidden')) {
+            instructionText.innerHTML = t['sim-step1'];
+        }
+        // Rebuild prev/next nav buttons with new language
+        buildSectionNavs();
+        // Save preference
+        try { localStorage.setItem('arcgis-lang', lang); } catch(e) {}
+    }
+
+    function toggleLanguage() {
+        setLanguage(currentLang === 'es' ? 'en' : 'es');
+    }
+
+    // --- SIDEBAR TOGGLE (MÓVIL) ---
+    (function() {
+        var toggle  = document.getElementById('sidebar-toggle');
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebar-overlay');
+
+        function openSidebar() {
+            sidebar.classList.add('sidebar-open');
+            overlay.classList.add('active');
+            toggle.setAttribute('aria-expanded', 'true');
+            toggle.querySelector('i').className = 'fas fa-times';
+        }
+        function closeSidebar() {
+            sidebar.classList.remove('sidebar-open');
+            overlay.classList.remove('active');
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.querySelector('i').className = 'fas fa-bars';
+        }
+
+        toggle.addEventListener('click', function() {
+            sidebar.classList.contains('sidebar-open') ? closeSidebar() : openSidebar();
+        });
+        overlay.addEventListener('click', closeSidebar);
+    })();
+
+    // --- NAVEGACIÓN GENERAL ---
+    function showSection(id, navElement) {
+        document.querySelectorAll('.section-content').forEach(sec => sec.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active-nav'));
+        if (navElement) navElement.classList.add('active-nav');
+        window.scrollTo(0, 0);
+        try { history.pushState(null, '', '#' + id); } catch(e) {}
+        // Cerrar sidebar en móvil al navegar
+        if (window.innerWidth < 768) {
+            document.getElementById('sidebar').classList.remove('sidebar-open');
+            document.getElementById('sidebar-overlay').classList.remove('active');
+            var toggle = document.getElementById('sidebar-toggle');
+            if (toggle) {
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.querySelector('i').className = 'fas fa-bars';
+            }
+        }
+    }
+
+    // --- DATOS DE LA INTERFAZ ---
+    const hotspotKeys = { ribbon: 'hs-ribbon', contents: 'hs-contents', map: 'hs-map', attr: 'hs-attr' };
+
+    // --- FUNCIONES DE HOTSPOTS ---
+    function showHotspot(key) {
+        const panel = document.getElementById('info-panel');
+        const t = TRANSLATIONS[currentLang];
+        const baseKey = hotspotKeys[key];
+        document.getElementById('hs-title').innerText = t[baseKey + '-t'] || key;
+        document.getElementById('hs-content').innerHTML = t[baseKey + '-c'] || '';
+        panel.style.display = 'block';
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function closeHotspot() {
+        document.getElementById('info-panel').style.display = 'none';
+    }
+
+    // --- LÓGICA DEL SIMULADOR (INDETERMINADA/GLOBAL) ---
+    // Referencias a elementos
+    const getEl = (id) => document.getElementById(id);
+
+    function handleSearch(e) {
+        const val = e.target.value.toLowerCase();
+        const results = getEl('search-results');
+        const input = getEl('tool-search');
+        const instruction = getEl('instruction-text');
+
+        var SEARCH_KEYWORDS = ['geodata', 'crear shapefiles', 'shapefile', 'shape', 'shp', 'geodatabase', 'exportar', 'convert', 'gdb', 'create shapefiles', 'export'];
+        if (SEARCH_KEYWORDS.some(function(kw) { return val.includes(kw); })) {
+            results.classList.remove('hidden');
+            input.classList.remove('pulsing');
+            instruction.innerHTML = TRANSLATIONS[currentLang]['sim-step2'];
+        } else {
+            results.classList.add('hidden');
+        }
+    }
+
+    function openTool() {
+        getEl('search-view').classList.add('hidden');
+        getEl('tool-view').classList.remove('hidden');
+        getEl('instruction-text').innerHTML = TRANSLATIONS[currentLang]['sim-step3'];
+    }
+
+    function addLayer() {
+        const select = getEl('layer-select');
+        const layer = select.value;
+        if (!layer) return;
+        if (getEl(`chip-${layer.replace(/\s+/g, '')}`)) return;
+
+        const layerChip = document.createElement('div');
+        layerChip.id = `chip-${layer.replace(/\s+/g, '')}`;
+        layerChip.className = "flex justify-between items-center bg-blue-50 p-1.5 px-3 border border-blue-100 text-[10px] rounded";
+        layerChip.innerHTML = `<span>${layer}</span> <i class="fas fa-times text-gray-400 cursor-pointer hover:text-red-500" onclick="this.parentElement.remove()"></i>`;
+        getEl('selected-layers').appendChild(layerChip);
+        
+        getEl('input-features-box').classList.remove('pulsing');
+        getEl('run-btn').classList.remove('hidden');
+        getEl('run-btn').classList.add('pulsing');
+        getEl('output-box').classList.add('pulsing');
+        
+        getEl('instruction-text').innerHTML = TRANSLATIONS[currentLang]['sim-step4'];
+    }
+
+    function executeRun() {
+        getEl('tool-view').classList.add('hidden');
+        getEl('progress-view').classList.remove('hidden');
+        getEl('run-btn').classList.remove('pulsing');
+        getEl('output-box').classList.remove('pulsing');
+        
+        let progress = 0;
+        const bar = getEl('progress-bar');
+        const interval = setInterval(() => {
+            progress += 10;
+            bar.style.width = progress + '%';
+            if (progress >= 100) {
+                clearInterval(interval);
+                getEl('loading-area').classList.add('hidden');
+                getEl('success-area').classList.remove('hidden');
+                getEl('instruction-box').classList.replace('bg-blue-600', 'bg-green-600');
+                getEl('instruction-text').innerHTML = TRANSLATIONS[currentLang]['sim-done'];
+            }
+        }, 150);
+    }
+
+    function resetTool() {
+        getEl('search-view').classList.remove('hidden');
+        getEl('tool-view').classList.add('hidden');
+        getEl('progress-view').classList.add('hidden');
+        getEl('success-area').classList.add('hidden');
+        getEl('loading-area').classList.remove('hidden');
+        getEl('search-results').classList.add('hidden');
+        getEl('output-box').classList.remove('pulsing');
+        
+        getEl('tool-search').value = '';
+        getEl('tool-search').classList.add('pulsing');
+        getEl('layer-select').value = '';
+        getEl('selected-layers').innerHTML = '';
+        getEl('progress-bar').style.width = '0%';
+        getEl('run-btn').classList.add('hidden');
+        
+        getEl('instruction-box').classList.replace('bg-green-600', 'bg-blue-600');
+        getEl('instruction-text').innerHTML = TRANSLATIONS[currentLang]['sim-step1'];
+    }
+
+    // --- FALLBACK IMAGEN ---
+    document.getElementById('img-interfaz').onerror = function() {
+        this.src = "https://pro.arcgis.com/es/pro-app/latest/get-started/get-started-with-arcgis-pro/GUID-F01211E1-92D9-4D34-979C-5D64C597D3C1-web.png";
+    };
+
+    // --- ORDEN DE SECCIONES (compartido por hash routing y nav ant/sig) ---
+    var SECTION_ORDER = [
+        { id: 'inicio',      key: 'nav-inicio' },
+        { id: 'crear-capas', key: 'nav-crear-capas' },
+        { id: 'edicion',     key: 'nav-edicion' },
+        { id: 'datos',       key: 'nav-datos' },
+        { id: 'dominios',    key: 'nav-dominios' },
+        { id: 'exportar',    key: 'nav-exportar' },
+        { id: 'paquetes',    key: 'nav-paquetes' },
+        { id: 'appeit',      key: 'nav-appeit' }
+    ];
+
+    // --- NAVEGACIÓN ANTERIOR / SIGUIENTE ---
+    function buildSectionNavs() {
+        // Remove any existing section-nav elements first
+        document.querySelectorAll('.section-nav').forEach(function(n) { n.remove(); });
+        var prevLabel = TRANSLATIONS[currentLang]['nav-prev'];
+        var nextLabel = TRANSLATIONS[currentLang]['nav-next'];
+        SECTION_ORDER.forEach(function(sec, idx) {
+            var section = document.getElementById(sec.id);
+            if (!section) return;
+            var prev = idx > 0 ? SECTION_ORDER[idx - 1] : null;
+            var next = idx < SECTION_ORDER.length - 1 ? SECTION_ORDER[idx + 1] : null;
+            var navEl = document.createElement('div');
+            navEl.className = 'section-nav';
+            var prevLabel2 = TRANSLATIONS[currentLang][prev ? prev.key : ''] || '';
+            var nextLabel2 = TRANSLATIONS[currentLang][next ? next.key : ''] || '';
+            var prevHtml = prev
+                ? '<button class="section-nav-btn" onclick="showSection(\'' + prev.id + '\', document.querySelectorAll(\'.nav-item\')[' + (idx-1) + '])">'
+                  + '<i class="fas fa-arrow-left"></i>'
+                  + '<span><span class="section-nav-label">' + prevLabel + '</span>' + prevLabel2 + '</span>'
+                  + '</button>'
+                : '<span></span>';
+            var nextHtml = next
+                ? '<button class="section-nav-btn" onclick="showSection(\'' + next.id + '\', document.querySelectorAll(\'.nav-item\')[' + (idx+1) + '])">'
+                  + '<span><span class="section-nav-label">' + nextLabel + '</span>' + nextLabel2 + '</span>'
+                  + '<i class="fas fa-arrow-right"></i>'
+                  + '</button>'
+                : '<span></span>';
+            navEl.innerHTML = prevHtml + nextHtml;
+            section.appendChild(navEl);
+        });
+    }
+
+    // --- INICIALIZACIÓN DE IDIOMA ---
+    (function() {
+        var savedLang;
+        try { savedLang = localStorage.getItem('arcgis-lang'); } catch(e) {}
+        setLanguage(savedLang === 'en' ? 'en' : 'es');
+    })();
+
+    // --- SOPORTE DE HISTORIAL Y HASH ---
+    (function() {
+        var ids = SECTION_ORDER.map(function(s) { return s.id; }); // IDs never change between languages
+        function navigateToHash() {
+            var hash = window.location.hash.replace('#', '');
+            var idx  = ids.indexOf(hash);
+            var navItems = document.querySelectorAll('.nav-item');
+            showSection(idx >= 0 ? hash : 'inicio', navItems[idx >= 0 ? idx : 0]);
+        }
+        window.addEventListener('popstate', navigateToHash);
+        navigateToHash();
+    })();
+</script>
+
+</body>
+</html>

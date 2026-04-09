@@ -1,0 +1,603 @@
+:root {
+            --arcgis-blue: #005e95;
+            --arcgis-dark: #1a1a1a;
+            --arcgis-light: #f4f4f4;
+            --arcgis-accent: #007ac2;
+            --hotspot-blue: #007ac2;
+            /* Variables del simulador */
+            --arcgis-border: #d0d0d0;
+            --arcgis-header: #f3f3f3;
+            /* Variables responsive */
+            --sidebar-width: 260px;
+            --content-padding: 40px;
+            --sidebar-z: 200;
+            --overlay-z: 190;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--arcgis-light);
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .sidebar {
+            background-color: var(--arcgis-dark);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            color: white;
+            overflow-y: auto;
+            z-index: var(--sidebar-z);
+            transition: transform 0.3s ease;
+        }
+
+        /* Hamburger button — visible solo en móvil */
+        #sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: calc(var(--sidebar-z) + 10);
+            background: var(--arcgis-dark);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 40px;
+            height: 40px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+        }
+
+        /* Overlay oscuro detrás del sidebar en móvil */
+        #sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: var(--overlay-z);
+        }
+        #sidebar-overlay.active { display: block; }
+
+        /* Responsive: móvil */
+        @media (max-width: 767px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.sidebar-open {
+                transform: translateX(0);
+            }
+            #sidebar-toggle {
+                display: flex;
+            }
+        }
+        /* Añadir estos estilos para que los nuevos elementos coincidan con el diseño */
+.section-header {
+    background-color: var(--arcgis-blue);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 6px 6px 0 0;
+    font-weight: bold;
+    margin: -25px -25px 20px -25px; /* Ajuste para que toque los bordes de la card */
+    display: flex;
+    align-items: center;
+}
+
+.step-badge {
+    background-color: var(--arcgis-blue);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+        .content {
+            margin-left: var(--sidebar-width);
+            padding: var(--content-padding);
+        }
+        @media (max-width: 767px) {
+            .content {
+                margin-left: 0;
+                padding: 60px 16px 24px 16px;
+            }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .content {
+                padding: 24px;
+            }
+        }
+        .nav-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+        }
+        .nav-item:hover, .active-nav {
+            background-color: #333;
+            border-left: 4px solid var(--arcgis-blue);
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .img-container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+            text-align: center;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background-color: var(--arcgis-blue);
+            color: white;
+            border-radius: 50%;
+            font-size: 14px;
+            margin-right: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .alert-box {
+            background-color: #fff4e5;
+            border-left: 4px solid #ffa117;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .alert-save {
+            border-left: 5px solid #e74c3c;
+            background-color: #fdf2f2;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .img-caption {
+            background: #eee;
+            padding: 8px;
+            font-size: 0.75rem;
+            color: #666;
+            font-style: italic;
+        }
+        .tool-badge {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        /* Estilos Guía Interactiva */
+        .viewport-container {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            border-radius: 8px;
+        }
+        .wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .main-img {
+            max-height: 70vh;
+            max-width: 100%;
+            display: block;
+        }
+        .hotspot {
+            position: absolute;
+            background: rgba(0, 122, 194, 0);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 20;
+        }
+        .hotspot:hover {
+            background: rgba(0, 122, 194, 0.15);
+            border-color: var(--hotspot-blue);
+            box-shadow: 0 0 20px rgba(0, 122, 194, 0.4);
+        }
+        /* Indicador visual pulsante en cada hotspot */
+        .hotspot::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 14px;
+            height: 14px;
+            background: var(--hotspot-blue);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 0 rgba(0, 122, 194, 0.5);
+            animation: hotspot-pulse 2s infinite;
+            opacity: 0.9;
+        }
+        @keyframes hotspot-pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(0, 122, 194, 0.5); }
+            70%  { box-shadow: 0 0 0 8px rgba(0, 122, 194, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 122, 194, 0); }
+        }
+        .hotspot:hover::before {
+            animation: none;
+            background: white;
+            border-color: var(--hotspot-blue);
+        }
+        #info-panel {
+            background: #2b2b2b;
+            border-top: 4px solid var(--hotspot-blue);
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+            color: #efefef;
+        }
+        kbd {
+            background: #444;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            border: 1px solid #666;
+            color: white;
+        }
+  /* Simulador ArcGIS Pro Style */
+        .arc-window {
+            background: #fff;
+            border: 1px solid var(--arcgis-border);
+            display: flex;
+            flex-direction: row;
+            height: 620px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .arc-panel-left {
+            width: 220px;
+            flex-shrink: 0;
+            background: var(--arcgis-header);
+            border-right: 1px solid var(--arcgis-border);
+            display: flex;
+            flex-direction: column;
+        }
+        .arc-panel-right {
+            width: 340px;
+            flex-shrink: 0;
+            border-left: 1px solid var(--arcgis-border);
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .arc-main-view {
+            flex-grow: 1;
+            min-width: 0;
+            position: relative;
+            background-color: #e5e5e5;
+            background-image: linear-gradient(#dcdcdc 1px, transparent 1px), linear-gradient(90deg, #dcdcdc 1px, transparent 1px);
+            background-size: 25px 25px;
+            overflow: hidden;
+        }
+        /* Tablet: ocultar panel Contents */
+        @media (max-width: 1023px) {
+            .arc-panel-left { display: none; }
+            .arc-panel-right { width: 280px; }
+        }
+        /* Móvil: apilar paneles verticalmente */
+        @media (max-width: 767px) {
+            .arc-window {
+                flex-direction: column;
+                height: auto;
+                max-height: none;
+            }
+            .arc-panel-right {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid var(--arcgis-border);
+                min-height: 320px;
+            }
+            .arc-main-view { min-height: 140px; }
+            /* Tipografía mínima legible en el simulador */
+            .arc-window .text-\[8px\],
+            .arc-window .text-\[9px\]  { font-size: 0.7rem !important; }
+            .arc-window .text-\[10px\],
+            .arc-window .text-\[11px\] { font-size: 0.75rem !important; }
+        }
+
+        .arc-header {
+            padding: 8px 12px;
+            background: var(--arcgis-header);
+            border-bottom: 1px solid var(--arcgis-border);
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Tool UI Elements */
+        .search-bar {
+            border: 1px solid var(--arcgis-border);
+            padding: 4px 8px;
+            width: 100%;
+            font-size: 0.8rem;
+            outline: none;
+        }
+        .tool-parameter {
+            margin-bottom: 12px;
+        }
+        .tool-label {
+            display: block;
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+            color: #444;
+        }
+        .tool-input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--arcgis-border);
+            padding: 1px;
+            background: #fff;
+        }
+        .tool-input {
+            flex-grow: 1;
+            border: none;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            outline: none;
+            background: transparent;
+        }
+        .folder-icon {
+            padding: 2px 6px;
+            background: #f8f8f8;
+            cursor: pointer;
+            border-left: 1px solid var(--arcgis-border);
+            color: #d4a017;
+        }
+        .run-btn {
+            background: #fff;
+            border: 1px solid var(--arcgis-border);
+            padding: 5px 15px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .run-btn:hover { background: #f2f2f2; }
+        .run-btn i { color: var(--arcgis-blue); }
+
+        .pulsing {
+            animation: pulse-blue 1.5s infinite;
+        }
+        @keyframes pulse-blue {
+            0% { box-shadow: 0 0 0 0 rgba(0, 94, 149, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 94, 149, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 94, 149, 0); }
+        }
+
+        .step-instruction {
+            background: var(--arcgis-blue);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 80px;
+        }
+        .warning-step {
+            background: #f59e0b;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 0.85rem;
+        }
+        .img-container {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            margin: 20px 0;
+            padding: 15px;
+            position: relative;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.3s;
+        }
+        .img-container:hover {
+            border-color: var(--arcgis-blue);
+        }
+
+        /* =====================
+           REPORT GALLERY
+           ===================== */
+        .report-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 16px;
+        }
+        .report-page-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .report-page-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+            transform: translateY(-2px);
+        }
+        .report-page-card .rpc-img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            object-position: top;
+            border-bottom: 2px solid #e2e8f0;
+            background: #fff;
+        }
+        .report-page-card .rpc-body {
+            padding: 14px 16px 18px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .report-page-card .rpc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #2563eb;
+            background: #dbeafe;
+            border-radius: 999px;
+            padding: 3px 10px;
+            margin-bottom: 8px;
+            width: fit-content;
+        }
+        .report-page-card .rpc-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .report-page-card .rpc-desc {
+            font-size: 0.78rem;
+            color: #4b5563;
+            line-height: 1.55;
+            flex: 1;
+        }
+
+        /* =====================
+           CLASES HUÉRFANAS
+           ===================== */
+        .route-path {
+            background: #f0f4ff;
+            border: 1px solid #c7d7f4;
+            border-left: 4px solid var(--arcgis-blue);
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin: 12px 0;
+            color: #1a3a5c;
+        }
+        .critical-alert {
+            display: flex;
+            align-items: flex-start;
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-left: 5px solid #e53e3e;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 24px;
+        }
+        .pro-tip {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 10px 14px;
+            border-radius: 4px;
+            color: #78350f;
+        }
+        .attribute-tag {
+            background: #e2e8f0;
+            color: #2d3748;
+            font-family: monospace;
+            font-size: 0.8rem;
+            padding: 1px 6px;
+            border-radius: 3px;
+        }
+        .img-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .img-placeholder-content {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+        }
+        .placeholder-text {
+            display: none;
+        }
+
+        /* =====================
+           NAVEGACIÓN ANT/SIG
+           ===================== */
+        .section-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            gap: 12px;
+        }
+        .section-nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            color: var(--arcgis-blue);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .section-nav-btn:hover {
+            background: var(--arcgis-blue);
+            color: white;
+            border-color: var(--arcgis-blue);
+        }
+        .section-nav-label {
+            font-size: 0.7rem;
+            color: #718096;
+            display: block;
+            font-weight: 400;
+        }
+        .section-nav-btn:hover .section-nav-label {
+            color: rgba(255,255,255,0.75);
+        }
